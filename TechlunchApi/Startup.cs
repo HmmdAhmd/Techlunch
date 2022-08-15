@@ -39,7 +39,7 @@ namespace TechlunchApi
             app.UseHttpsRedirection();
 
             app.UseRouting();
-
+            //for authorization
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
