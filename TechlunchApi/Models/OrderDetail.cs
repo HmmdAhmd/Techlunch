@@ -12,14 +12,14 @@ namespace TechlunchApi.Models
         public int OrderId { get; set; }
 
         [ForeignKey("OrderId")]
-        public Order Order { get; set; }
+        public Order OrderFK { get; set; }
 
 
         [Required]
         public int FoodItemId { get; set; }
 
         [ForeignKey("FoodItemId")]
-        public FoodItem FoodItem { get; set; }
+        public FoodItem FoodItemFK { get; set; }
 
 
 

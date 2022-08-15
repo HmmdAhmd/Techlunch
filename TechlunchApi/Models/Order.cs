@@ -15,7 +15,7 @@ namespace TechlunchApi.Models
         public float TotalPrice { get; set; }
 
         [Required]
-        public DateTime Timestamp { get; set; }
+        public DateTime CreatedAt { get; set; }
 
         public Boolean Status { get; set; }
     }

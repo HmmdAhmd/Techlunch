@@ -13,7 +13,7 @@ namespace TechlunchApi.Models
         public int IngredientId { get; set; }
 
         [ForeignKey("IngredientId")]
-        public Ingredient Ingredient { get; set; }
+        public Ingredient IngredientFK { get; set; }
 
 
         [Required]

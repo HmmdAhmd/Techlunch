@@ -62,7 +62,7 @@ namespace TechlunchApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("FoodItem");
+                    b.ToTable("FoodItems");
                 });
 
             modelBuilder.Entity("TechlunchApi.Models.FoodItemIngredients", b =>
@@ -126,7 +126,7 @@ namespace TechlunchApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Ingredient");
+                    b.ToTable("Ingredients");
                 });
 
             modelBuilder.Entity("TechlunchApi.Models.Inventory", b =>
@@ -136,6 +136,9 @@ namespace TechlunchApi.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<DateTime>("AddedOn")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("IngredientId")
                         .HasColumnType("int");
 
@@ -144,9 +147,6 @@ namespace TechlunchApi.Migrations
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
-
-                    b.Property<DateTime>("Timestamp")
-                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -162,18 +162,18 @@ namespace TechlunchApi.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<bool>("Status")
                         .HasColumnType("bit");
-
-                    b.Property<DateTime>("Timestamp")
-                        .HasColumnType("datetime2");
 
                     b.Property<float>("TotalPrice")
                         .HasColumnType("real");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Order");
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("TechlunchApi.Models.OrderDetail", b =>
@@ -206,13 +206,13 @@ namespace TechlunchApi.Migrations
 
             modelBuilder.Entity("TechlunchApi.Models.FoodItemIngredients", b =>
                 {
-                    b.HasOne("TechlunchApi.Models.FoodItem", "FoodItem")
+                    b.HasOne("TechlunchApi.Models.FoodItem", "FoodItemFK")
                         .WithMany()
                         .HasForeignKey("FoodItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TechlunchApi.Models.Ingredient", "Ingredient")
+                    b.HasOne("TechlunchApi.Models.Ingredient", "IngredientFK")
                         .WithMany()
                         .HasForeignKey("IngredientId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -221,7 +221,7 @@ namespace TechlunchApi.Migrations
 
             modelBuilder.Entity("TechlunchApi.Models.GeneralInventory", b =>
                 {
-                    b.HasOne("TechlunchApi.Models.Ingredient", "Ingredient")
+                    b.HasOne("TechlunchApi.Models.Ingredient", "IngredientFK")
                         .WithMany()
                         .HasForeignKey("IngredientId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -230,7 +230,7 @@ namespace TechlunchApi.Migrations
 
             modelBuilder.Entity("TechlunchApi.Models.Inventory", b =>
                 {
-                    b.HasOne("TechlunchApi.Models.Ingredient", "Ingredient")
+                    b.HasOne("TechlunchApi.Models.Ingredient", "IngredientFK")
                         .WithMany()
                         .HasForeignKey("IngredientId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -239,13 +239,13 @@ namespace TechlunchApi.Migrations
 
             modelBuilder.Entity("TechlunchApi.Models.OrderDetail", b =>
                 {
-                    b.HasOne("TechlunchApi.Models.FoodItem", "FoodItem")
+                    b.HasOne("TechlunchApi.Models.FoodItem", "FoodItemFK")
                         .WithMany()
                         .HasForeignKey("FoodItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TechlunchApi.Models.Order", "Order")
+                    b.HasOne("TechlunchApi.Models.Order", "OrderFK")
                         .WithMany()
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
