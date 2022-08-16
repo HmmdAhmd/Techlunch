@@ -39,7 +39,7 @@ namespace TechlunchApi.Controllers
                 return NotFound();
             }
 
-            return ingredient;
+            return Ok(ingredient);
         }
     }
 }
