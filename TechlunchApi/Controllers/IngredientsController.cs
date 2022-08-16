@@ -55,5 +55,21 @@ namespace TechlunchApi.Controllers
 
             return CreatedAtAction("GetIngredient", new { id = ingredient.Id }, ingredient);
         }
+
+        // DELETE: api/Ingredients/5
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<Ingredient>> DeleteIngredient(int id)
+        {
+            var ingredient = await _context.Ingredients.FindAsync(id);
+            if (ingredient == null || ingredient.Status == false)
+            {
+                return NotFound();
+            }
+
+            ingredient.Status = false;
+            await _context.SaveChangesAsync();
+
+            return Ok();
+        }
     }
 }
