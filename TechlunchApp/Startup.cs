@@ -48,10 +48,14 @@ namespace TechlunchApp
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapControllerRoute(name: "dashboard",
+                 pattern: "dashboard",
+                 defaults: new { controller = "Home", action = "Dashboard" });
+
+                endpoints.MapControllerRoute(name: "default",
+                            pattern: "{controller=Home}/{action=Index}/{id?}");
             });
+
         }
     }
 }
