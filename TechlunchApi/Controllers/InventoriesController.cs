@@ -48,9 +48,9 @@ namespace TechlunchApi.Controllers
         public async Task<ActionResult<Inventory>> PostInventory(Inventory inventory)
         {
 
-            var ing = await _context.Ingredients.FindAsync(inventory.IngredientId);
+            var ingredientObj = await _context.Ingredients.FindAsync(inventory.IngredientId);
             
-            if (ing == null || !ing.Status)
+            if (ingredientObj == null || !ingredientObj.Status)
             {
                 return NotFound("Error 404: Ingredient item not found");
             }
