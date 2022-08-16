@@ -25,7 +25,11 @@ namespace TechlunchApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Ingredient>>> GetIngredients()
         {
-            return await _context.Ingredients.ToListAsync();
+            var result = await _context.Ingredients.ToListAsync();
+            var ingredients = from i in result
+                              where i.Status == true
+                              select i;
+            return ingredients.ToList();
         }
 
         // GET: api/Ingredients/5
@@ -34,7 +38,7 @@ namespace TechlunchApi.Controllers
         {
             var ingredient = await _context.Ingredients.FindAsync(id);
 
-            if (ingredient == null)
+            if (ingredient == null || ingredient.Status == false)
             {
                 return NotFound();
             }
