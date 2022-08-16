@@ -43,5 +43,23 @@ namespace TechlunchApi.Controllers
             return Ok(inventory);
         }
 
+        // POST: api/Inventories
+        [HttpPost]
+        public async Task<ActionResult<Inventory>> PostInventory(Inventory inventory)
+        {
+
+            var ing = await _context.Ingredients.FindAsync(inventory.IngredientId);
+            
+            if (ing == null || !ing.Status)
+            {
+                return NotFound("Error 404: Ingredient item not found");
+            }
+
+            _context.Inventory.Add(inventory);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetInventory", new { id = inventory.Id }, inventory);
+        }
+
     }
 }
