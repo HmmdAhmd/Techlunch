@@ -43,6 +43,21 @@ namespace TechlunchApi.Controllers
             return Ok(inventory);
         }
 
+        // GET: api/Inventories/Ingredient/5
+        [HttpGet("Ingredient/{id}")]
+        public async Task<ActionResult<IEnumerable<IngredientHistory>>> GetIngredientHistory(int id)
+        {
+            var ingredientHistory = _context.Inventory.Where(i => i.IngredientId == id).Select(i =>
+                new IngredientHistory(i.Quantity, i.Price, i.AddedOn)).ToList();
+
+            if (ingredientHistory == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(ingredientHistory);
+        }
+
         // POST: api/Inventories
         [HttpPost]
         public async Task<ActionResult<Inventory>> PostInventory(Inventory inventory)
