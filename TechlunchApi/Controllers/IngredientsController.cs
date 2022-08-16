@@ -71,5 +71,45 @@ namespace TechlunchApi.Controllers
 
             return Ok();
         }
+
+        private bool IngredientExists(int id)
+        {
+            return _context.Ingredients.Any(e => e.Id == id && e.Status == true);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> EditIngredient(int id, Ingredient ingredient)
+        {
+            if (id != ingredient.Id)
+            {
+                return BadRequest();
+            }
+
+            var ing = await _context.Ingredients.FindAsync(id);
+            if (ing == null || ing.Status == false)
+            {
+                return NotFound();
+            }
+
+            ing.Name = ingredient.Name;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!IngredientExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return CreatedAtAction("GetIngredient", new { id = id }, ing);
+        }
     }
 }
