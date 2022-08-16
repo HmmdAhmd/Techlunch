@@ -74,7 +74,7 @@ namespace TechlunchApi.Controllers
 
         private bool IngredientExists(int id)
         {
-            return _context.Ingredients.Any(e => e.Id == id && e.Status == true);
+            return _context.Ingredients.Any(e => e.Id == id && e.Status);
         }
 
         [HttpPut("{id}")]
@@ -86,7 +86,7 @@ namespace TechlunchApi.Controllers
             }
 
             var ing = await _context.Ingredients.FindAsync(id);
-            if (ing == null || ing.Status == false)
+            if (ing == null || !ing.Status)
             {
                 return NotFound();
             }
