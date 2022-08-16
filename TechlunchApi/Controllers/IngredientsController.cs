@@ -41,5 +41,15 @@ namespace TechlunchApi.Controllers
 
             return Ok(ingredient);
         }
+
+        // POST: api/Ingredients
+        [HttpPost]
+        public async Task<ActionResult<Ingredient>> PostIngredient(Ingredient ingredient)
+        {
+            _context.Ingredients.Add(ingredient);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetIngredient", new { id = ingredient.Id }, ingredient);
+        }
     }
 }
