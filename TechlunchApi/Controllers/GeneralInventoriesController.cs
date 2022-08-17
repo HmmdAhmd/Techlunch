@@ -42,5 +42,25 @@ namespace TechlunchApi.Controllers
 
             return Ok(generalInventory);
         }
+
+        // GET: api/GeneralInventories/Ingredient/5
+        [HttpGet("Ingredient/{id}")]
+        public async Task<ActionResult<IngredientHistory>> GetIngredientHistory(int id)
+        {
+            var ingredientHistory = await _context.GeneralInventory.
+                SingleOrDefaultAsync(i => i.IngredientId == id);
+
+            if (ingredientHistory == null)
+            {
+                var ingredient = await _context.Ingredients.FindAsync(id);
+                if (ingredient == null)
+                {
+                    return BadRequest("Error 400: Ingredient item doesn't exist");
+                }
+                return NotFound("Error 404: Ingredient history not found in general inventory");
+            }
+
+            return Ok(ingredientHistory);
+        }
     }
 }
