@@ -22,6 +22,9 @@ namespace TechlunchApi.Models
 
         [ForeignKey("FoodItemId")]
         public FoodItem FoodItemFK { get; set; }
+        [Required]
+        public int Quantity { get; set; }
+
 
     }
 }

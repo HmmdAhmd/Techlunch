@@ -10,7 +10,7 @@ using TechlunchApi.Data;
 namespace TechlunchApi.Migrations
 {
     [DbContext(typeof(TechlunchDbContext))]
-    [Migration("20220815122442_InitialCreate")]
+    [Migration("20220816132319_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -78,6 +78,9 @@ namespace TechlunchApi.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("IngredientId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
                         .HasColumnType("int");
 
                     b.HasKey("Id");

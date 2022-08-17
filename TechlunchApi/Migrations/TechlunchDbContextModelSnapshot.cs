@@ -78,6 +78,9 @@ namespace TechlunchApi.Migrations
                     b.Property<int>("IngredientId")
                         .HasColumnType("int");
 
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("FoodItemId");
