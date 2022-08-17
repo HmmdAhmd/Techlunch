@@ -24,20 +24,20 @@ namespace TechlunchApp.Controllers
             FoodItemViewModel FoodItem = new FoodItemViewModel();
             using (var httpClient = new HttpClient())
             {
-                using (var response = await httpClient.GetAsync(_apiUrl + "fooditemingredients/" + id.ToString()))
+                using (var response = await httpClient.GetAsync($"{_apiUrl}fooditemingredients/{id}"))
                 {
                     string apiResponse = await response.Content.ReadAsStringAsync();
                     FoodItemIngredients = JsonConvert.DeserializeObject<List<FoodItemIngredientViewModel>>(apiResponse);
 
                 }
-                using (var IngredientsResponse = await httpClient.GetAsync(_apiUrl + "Ingredients"))
+                using (var IngredientsResponse = await httpClient.GetAsync($"{_apiUrl}Ingredients"))
                 {
                     string IngredientApiResponse = await IngredientsResponse.Content.ReadAsStringAsync();
                     Ingredients = JsonConvert.DeserializeObject<List<IngredientViewModel>>(IngredientApiResponse);
 
                 }
 
-                using (var FoodItemResponse = await httpClient.GetAsync(_apiUrl + "FoodItems/" +id))
+                using (var FoodItemResponse = await httpClient.GetAsync($"{_apiUrl}FoodItems/{id}"))
                 {
                     string FooddItemApiResponse = await FoodItemResponse.Content.ReadAsStringAsync();
                     FoodItem = JsonConvert.DeserializeObject<FoodItemViewModel>(FooddItemApiResponse);
@@ -59,7 +59,7 @@ namespace TechlunchApp.Controllers
             using (var httpClient = new HttpClient())
             {
                 StringContent content = new StringContent(JsonConvert.SerializeObject(FoodItemIngredientObj), Encoding.UTF8, "application/json");
-                var response = await httpClient.PostAsync(_apiUrl + "FoodItemIngredients", content);
+                var response = await httpClient.PostAsync($"{_apiUrl}FoodItemIngredients", content);
                 string FooddItemApiResponse = await response.Content.ReadAsStringAsync();
             }
 
@@ -72,12 +72,12 @@ namespace TechlunchApp.Controllers
         {
             using (var httpClient = new HttpClient())
             {
-                using (var response = await httpClient.DeleteAsync(_apiUrl + "FoodItemIngredients/" + ItemId.ToString()))
+                using (var response = await httpClient.DeleteAsync($"{_apiUrl}FoodItemIngredients/{ItemId}"))
                 {
                     string apiResponse = await response.Content.ReadAsStringAsync();
                 }
             }
-            return Redirect("/FoodItemIngredient/Create/"+ FoodItemId);
+            return Redirect($"/FoodItemIngredient/Create/{FoodItemId}");
         }
     }
 }

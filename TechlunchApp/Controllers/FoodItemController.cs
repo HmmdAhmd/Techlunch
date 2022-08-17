@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
@@ -9,7 +10,7 @@ using TechlunchApp.ViewModels;
 
 namespace TechlunchApp.Controllers
 {
-   
+
     public class FoodItemController : Controller
     {
         private readonly string _apiUrl;
@@ -22,7 +23,7 @@ namespace TechlunchApp.Controllers
             List<FoodItemViewModel> FoodItems = new List<FoodItemViewModel>();
             using (var httpClient = new HttpClient())
             {
-                using (var response = await httpClient.GetAsync(_apiUrl+"fooditems"))
+                using (var response = await httpClient.GetAsync($"{_apiUrl}fooditems"))
                 {
                     string apiResponse = await response.Content.ReadAsStringAsync();
                     FoodItems = JsonConvert.DeserializeObject<List<FoodItemViewModel>>(apiResponse);
@@ -46,8 +47,8 @@ namespace TechlunchApp.Controllers
             using (var httpClient = new HttpClient())
             {
                 StringContent content = new StringContent(JsonConvert.SerializeObject(FoodItemObj), Encoding.UTF8, "application/json");
-                var response = await httpClient.PostAsync(_apiUrl + "fooditems", content);
-                
+                var response = await httpClient.PostAsync($"{_apiUrl}fooditems", content);
+
             }
             return RedirectToAction("Index");
         }
@@ -57,12 +58,13 @@ namespace TechlunchApp.Controllers
         {
             using (var httpClient = new HttpClient())
             {
-                using (var response = await httpClient.DeleteAsync(_apiUrl + "fooditems/" + ItemId.ToString()))
+                using (var response = await httpClient.DeleteAsync($"{_apiUrl}fooditems/{ItemId}"))
                 {
                     string apiResponse = await response.Content.ReadAsStringAsync();
                 }
             }
             return RedirectToAction("Index");
         }
+
     }
 }

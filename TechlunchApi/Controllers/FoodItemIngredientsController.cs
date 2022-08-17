@@ -41,7 +41,7 @@ namespace TechlunchApi.Controllers
                           .Where(tbl => tbl.IngredientId == foodItemIngredients.IngredientId &&
                                         tbl.FoodItemId == foodItemIngredients.FoodItemId)
                           .SingleOrDefault();
-
+            //check if ingredient is already added against food item so update the quanitiy otherwise add new record
             if (foodItemIngredient == null)
             {
                 _context.FoodItemIngredients.Add(foodItemIngredients);
@@ -59,6 +59,9 @@ namespace TechlunchApi.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<FoodItemIngredients>> DeleteFoodItemIngredients(int id)
         {
+            /*this is hard delete because this table contains many to many relationship of ingredient
+             and food item, so if we want to remove ingredient from food item so it should be hard
+             deleted from the database*/ 
             var foodItemIngredients = await _context.FoodItemIngredients.FindAsync(id);
             if (foodItemIngredients == null)
             {
@@ -66,7 +69,7 @@ namespace TechlunchApi.Controllers
             }
             _context.FoodItemIngredients.Remove(foodItemIngredients);
             await _context.SaveChangesAsync();
-            return foodItemIngredients;
+            return Ok();
         }
     }
 }
