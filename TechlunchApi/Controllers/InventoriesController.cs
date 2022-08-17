@@ -43,6 +43,32 @@ namespace TechlunchApi.Controllers
             return Ok(inventory);
         }
 
+        public async Task<bool> AddToGeneralInventory(Inventory inventory)
+        {
+            var generalInventory = await _context.GeneralInventory.SingleOrDefaultAsync(
+                i => i.IngredientId == inventory.IngredientId);
+
+            if (generalInventory == null) // add a new record
+            {
+                GeneralInventory generalInventoryObj = new GeneralInventory
+                {
+                    IngredientId = inventory.IngredientId,
+                    AvailableQuantity = inventory.Quantity,
+                    AveragePrice = inventory.Price / inventory.Quantity
+                };
+                _context.GeneralInventory.Add(generalInventoryObj);
+                
+            } else // update existing record
+            {
+                generalInventory.AvailableQuantity += inventory.Quantity;
+                generalInventory.AveragePrice = 
+                    (generalInventory.AveragePrice + (inventory.Price / inventory.Quantity)) / 2;
+            }
+
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
         // POST: api/Inventories
         [HttpPost]
         public async Task<ActionResult<Inventory>> PostInventory(Inventory inventory)
@@ -54,6 +80,8 @@ namespace TechlunchApi.Controllers
             {
                 return NotFound("Error 404: Ingredient item not found");
             }
+
+            await AddToGeneralInventory(inventory);
 
             _context.Inventory.Add(inventory);
             await _context.SaveChangesAsync();
