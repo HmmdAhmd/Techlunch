@@ -27,7 +27,6 @@ namespace TechlunchApp.Controllers
                 {
                     string apiResponse = await response.Content.ReadAsStringAsync();
                     FoodItems = JsonConvert.DeserializeObject<List<FoodItemViewModel>>(apiResponse);
-
                 }
             }
             return View(FoodItems);
