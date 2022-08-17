@@ -1,0 +1,124 @@
+﻿@model dynamic
+@{
+     ViewData["Title"] = "Food Item Ingredients";
+}
+
+            <div class="main-content">
+                <div class="page-content">
+                    <div class="container-fluid">
+                        <!-- start page title -->
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                                    <h4 class="mb-sm-0">Food Item Ingredients</h4>
+
+                                    <div class="page-title-right">
+                                        <ol class="breadcrumb m-0">
+                                            <li class="breadcrumb-item"><a href="javascript: void(0);">Food Items</a></li>
+                                            <li class="breadcrumb-item active">Ingredients</li>
+                                        </ol>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <!-- end page title -->
+
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-header align-items-center d-flex">
+                                        <h4 class="card-title mb-0 flex-grow-1">Add Food Item - @Model.FoodItem.Name</h4>
+                                        <div class="flex-shrink-0">
+                                            <div class="form-check form-switch form-switch-right form-switch-md">
+                                                <a class="btn btn-warning" href="/fooditem">Go Back</a>
+                                            </div>
+                                        </div>
+                                    </div><!-- end card header -->
+
+                                    <div class="card-body">
+                                        <form asp-controller="FoodItemIngredient" asp-action="Create" method="post">
+                                        <div class="row gy-4 mb-2">
+                                        <div class="col-xxl-3 col-md-6">
+                                            <input type="hidden" id="Id" name="Id" value="" />
+                                            <input type="hidden" id="FoodItemId" name="FoodItemId" value="@Model.FoodItem.Id" />
+                                                <div>
+                                                    <label for="Name" class="form-label">Ingredient</label>
+                                                     <select class="form-select mb-3" name="IngredientId" required>
+                                                      <option selected value="">Select Ingredient</option>
+                                                       @foreach (IngredientViewModel ingredient in Model.Ingredients){
+                                                           <option value="@ingredient.Id">@ingredient.Name</option>
+                                                       }
+                                                    </select>
+                                                </div>
+                                         </div>
+                                         <div class="col-xxl-3 col-md-6">
+                                                <div>
+                                                    <label for="Quantity" class="form-label">Quantity (In Grams)</label>
+                                                    <input type="number" class="form-control" name="Quantity" id="Quantity" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                       
+                                        <button class="btn btn-primary mt-2">Save</button>
+                                        </form>
+                                     </div>
+
+                                     
+                                 </div>
+                            </div>
+                         </div>
+
+                         <div class="row">
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-header align-items-center d-flex">
+                                        <h4 class="card-title mb-0 flex-grow-1">Ingredients</h4>
+                                    </div><!-- end card header -->
+
+                                    <div class="card-body">
+                                        
+                                        <div class="live-preview">
+                                            <div class="table-responsive">
+                                                <table class="table align-middle table-nowrap mb-0">
+                                                    <thead>
+                                                        <tr>
+                                                            <th scope="col">No.</th>
+                                                            <th scope="col">Item</th>
+                                                            <th scope="col">Ingredient</th>
+                                                            <th scope="col">Quantity</th>
+                                                            <th scope="col"></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @{int i = 1;}
+                                                        @foreach (FoodItemIngredientViewModel FoodItemIngredient in Model.FoodItemIngredients){
+                                                        <tr>
+                                                            <th scope="row">@i @{i++;}</th>
+                                                            <td>@Model.FoodItem.Name</td>
+                                                            <td>@FoodItemIngredient.IngredientFK.Name</td>
+                                                            <td>@FoodItemIngredient.Quantity grams</td>
+                                                            <td>
+                                                            <form asp-action="Delete" method="post">
+                                                                    <input type="hidden" value="@FoodItemIngredient.Id" name="ItemId" />
+                                                                    <input type="hidden" value="@Model.FoodItem.Id" name="FoodItemId" />
+                                                                    <input type="submit" class="link-danger delete-btn" value="Delete"/>
+                                                            </form>
+                                                            </td>
+                                                        </tr>
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+
+
+                                        </div>
+                                    </div><!-- end card-body -->
+                                </div><!-- end card -->
+                            </div>
+                            
+
+                    </div>
+                </div>
+             </div>
