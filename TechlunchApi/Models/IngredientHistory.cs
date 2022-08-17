@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TechlunchApi.Data
+namespace TechlunchApi.Models
 {
     public class IngredientHistory
     {

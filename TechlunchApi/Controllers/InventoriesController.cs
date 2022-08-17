@@ -47,12 +47,17 @@ namespace TechlunchApi.Controllers
         [HttpGet("Ingredient/{id}")]
         public async Task<ActionResult<IEnumerable<IngredientHistory>>> GetIngredientHistory(int id)
         {
-            var ingredientHistory = _context.Inventory.Where(i => i.IngredientId == id).Select(i =>
-                new IngredientHistory(i.Quantity, i.Price, i.AddedOn)).ToList();
+            var ingredientHistory = await _context.Inventory.Where(i => i.IngredientId == id).Select(i =>
+                new IngredientHistory(i.Quantity, i.Price, i.AddedOn)).ToListAsync();
 
-            if (ingredientHistory == null)
+            if (!ingredientHistory.Any())
             {
-                return NotFound();
+                var ingredient = await _context.Ingredients.FindAsync(id);
+                if (ingredient == null)
+                {
+                    return BadRequest("Error 400: Ingredient item doesn't exist");
+                }
+                return NotFound("Error 404: Ingredient history not found");
             }
 
             return Ok(ingredientHistory);
