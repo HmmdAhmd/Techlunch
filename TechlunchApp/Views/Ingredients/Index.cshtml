@@ -68,7 +68,9 @@
                                                     <th>@i</th>
                                                     <td>@r.Name</td>
                                                     <td>
-                                                        <form asp-action="Delete" method="post">
+                                                        <a class="edit-btn" href="/ingredients/edit/@r.Id">Edit</a>
+                                                        |
+                                                        <form asp-action="Delete" method="post" style="display:inline-block;">
                                                             <input type="hidden" value="@r.Id" name="ItemId" />
                                                             <input type="submit" class="link-danger delete-btn" value="Delete" />
                                                         </form>

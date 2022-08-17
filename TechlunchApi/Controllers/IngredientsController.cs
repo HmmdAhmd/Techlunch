@@ -28,6 +28,7 @@ namespace TechlunchApi.Controllers
             var result = await _context.Ingredients.ToListAsync();
             var ingredients = from i in result
                               where i.Status == true
+                              orderby i.Id descending
                               select i;
             return ingredients.ToList();
         }
@@ -77,6 +78,7 @@ namespace TechlunchApi.Controllers
             return _context.Ingredients.Any(e => e.Id == id && e.Status);
         }
 
+        // PUT: api/Ingredients/5
         [HttpPut("{id}")]
         public async Task<IActionResult> EditIngredient(int id, Ingredient ingredient)
         {

@@ -4,5 +4,12 @@
     background: none !important;
     border: none;
     padding: 0 !important;
-    
+}
+
+.edit-btn {
+    color: dodgerblue;
+}
+
+.edit-btn:hover {
+    color: darkblue;
 }
