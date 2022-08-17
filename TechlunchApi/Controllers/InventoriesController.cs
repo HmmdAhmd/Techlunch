@@ -43,7 +43,7 @@ namespace TechlunchApi.Controllers
             return Ok(inventory);
         }
 
-        public async Task<bool> AddToGeneralInventory(Inventory inventory)
+        private async Task<bool> AddToGeneralInventory(Inventory inventory)
         {
             var generalInventory = await _context.GeneralInventory.SingleOrDefaultAsync(
                 i => i.IngredientId == inventory.IngredientId);
