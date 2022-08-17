@@ -70,5 +70,18 @@ namespace TechlunchApp.Controllers
             return RedirectToAction("Index");
         }
 
+        [HttpPost]
+        public async Task<IActionResult> Delete(int id)
+        {
+            using (var httpClient = new HttpClient())
+            {
+                using (var response = await httpClient.DeleteAsync($"{Constants.ApiUrl}ingredients/{id}"))
+                {
+                    await response.Content.ReadAsStringAsync();
+                }
+            }
+            return RedirectToAction("Index");
+        }
+
     }
 }
