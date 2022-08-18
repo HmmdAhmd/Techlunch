@@ -55,5 +55,30 @@ namespace TechlunchApp.Controllers
             return RedirectToAction("Index");
         }
 
+        [HttpGet]
+        public async Task<ActionResult> IngredientHistory(int id)
+        {
+            List<IngredientHistoryViewModel> IngredientHistories = new List<IngredientHistoryViewModel>();
+            IngredientViewModel ingredientObj;
+
+            using (var httpClient = new HttpClient())
+            {
+                using (var response = await httpClient.GetAsync($"{Constants.ApiUrl}Inventories/Ingredient/{id}"))
+                {
+                    string content = await response.Content.ReadAsStringAsync();
+                    IngredientHistories = JsonConvert.DeserializeObject<List<IngredientHistoryViewModel>>(content);
+                }
+
+                using (var response = await httpClient.GetAsync($"{Constants.ApiUrl}Ingredients/{id}"))
+                {
+                    string content = await response.Content.ReadAsStringAsync();
+                    ingredientObj = JsonConvert.DeserializeObject<IngredientViewModel>(content);
+                }
+            }
+
+            ViewData["name"] = ingredientObj.Name;
+            return View(IngredientHistories);
+        }
+
     }
 }

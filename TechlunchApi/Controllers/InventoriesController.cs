@@ -73,7 +73,9 @@ namespace TechlunchApi.Controllers
         [HttpGet("Ingredient/{id}")]
         public async Task<ActionResult<IEnumerable<IngredientHistory>>> GetIngredientHistory(int id)
         {
-            var ingredientHistory = await _context.Inventory.Where(i => i.IngredientId == id).Select(i =>
+            var ingredientHistory = await _context.Inventory.Where(i => i.IngredientId == id)
+                .OrderByDescending(i => i.Id)
+                .Select(i =>
                 new IngredientHistory(i.Quantity, i.Price, i.AddedOn)).ToListAsync();
 
             if (!ingredientHistory.Any())
