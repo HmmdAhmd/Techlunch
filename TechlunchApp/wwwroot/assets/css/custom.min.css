@@ -10,6 +10,14 @@
     color: dodgerblue;
 }
 
-.edit-btn:hover {
-    color: darkblue;
+    .edit-btn:hover {
+        color: darkblue;
+    }
+
+.deleteBtn {
+    color: red;
 }
+
+    .deleteBtn:hover {
+        color: darkred;
+    }

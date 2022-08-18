@@ -23,7 +23,8 @@ namespace TechlunchApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Order>>> GetOrders()
         {
-            return await _context.Orders.OrderByDescending(o => o.Id).ToListAsync();
+            return await _context.Orders.Where(o => o.Status == true)
+                .OrderByDescending(o => o.Id).ToListAsync();
         }
     }
 }
