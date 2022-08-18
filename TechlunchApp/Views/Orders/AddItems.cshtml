@@ -5,7 +5,7 @@
     int price = 0;
 }
 
-@if (ViewData["message"] != null)
+@if (ViewData["message"].ToString() != String.Empty)
 {
     <script>alert("@ViewData["message"]");</script>
 }
@@ -124,7 +124,7 @@
                                                     <td>@orderDetail.Price</td>
                                                     <td>
                                                         <form asp-controller="OrderDetails" asp-action="Delete" method="post">
-                                                            <input type="hidden" value="@Model.OrderDetails.Id" name="id" />
+                                                            <input type="hidden" value="@orderDetail.Id" name="id" />
                                                             <input type="submit" class="link-danger delete-btn" value="Delete" />
                                                         </form>
                                                     </td>

@@ -46,7 +46,7 @@ namespace TechlunchApp.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> AddItems(int id)
+        public async Task<IActionResult> AddItems(int id, string message = "")
         {
             List<FoodItemViewModel> foodItems = new List<FoodItemViewModel>();
             List<OrderDetailsViewModel> orderDetailsList = new List<OrderDetailsViewModel>();
@@ -78,12 +78,52 @@ namespace TechlunchApp.Controllers
             Context.FoodItems = foodItems;
             Context.OrderDetails = orderDetailsList;
             Context.Order = orderObj;
+
+            ViewData["message"] = message;
             return View(Context);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddItems(OrderDetailsViewModel orderDetail)
+        {
+            bool available = await CheckIngredientsAvailability(orderDetail.FoodItemId, orderDetail.Quantity);
+
+            FoodItemViewModel foodItem = new FoodItemViewModel();
+
+            using (var httpClient = new HttpClient())
+            {
+                using (var Response = await httpClient.GetAsync($"{Constants.ApiUrl}fooditems/{orderDetail.FoodItemId}"))
+                {
+                    string apiResponse = await Response.Content.ReadAsStringAsync();
+                    foodItem = JsonConvert.DeserializeObject<FoodItemViewModel>(apiResponse);
+                }
+            }
+
+            if (available)
+            {
+                float price = 0;
+
+                using (var httpClient = new HttpClient())
+                {
+                    orderDetail.Price = foodItem.Price * orderDetail.Quantity;
+                    price = orderDetail.Price;
+
+                    StringContent content = new StringContent(JsonConvert.SerializeObject(orderDetail), Encoding.UTF8, "application/json"); ;
+                    var response = await httpClient.PostAsync($"{Constants.ApiUrl}orderdetails", content);
+                }
+
+                await IncrementOrderPrice(orderDetail.OrderId, price);
+
+                return RedirectToPage($"/AddItems/{orderDetail.OrderId}");
+            }
+
+            string message = $"Food Item: {foodItem.Name} cannot be added as specified quantity is unavailable";
+            return await AddItems(1, message);
         }
 
         private async Task UpdateQuantityInGeneralInventory(List<GeneralInventoryViewModel> generalInventoryList)
         {
-            foreach(GeneralInventoryViewModel generalInventoryObj in generalInventoryList)
+            foreach (GeneralInventoryViewModel generalInventoryObj in generalInventoryList)
             {
                 using (var httpClient = new HttpClient())
                 {
@@ -152,43 +192,6 @@ namespace TechlunchApp.Controllers
                 StringContent content = new StringContent(JsonConvert.SerializeObject(orderObj), Encoding.UTF8, "application/json");
                 var response = await httpClient.PutAsync($"{Constants.ApiUrl}orders/{orderId}", content);
             }
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> AddItems(OrderDetailsViewModel orderDetail)
-        {
-            bool available = await CheckIngredientsAvailability(orderDetail.FoodItemId, orderDetail.Quantity);
-
-            FoodItemViewModel foodItem = new FoodItemViewModel();
-
-            if (available)
-            {
-                float price = 0;
-
-                using (var httpClient = new HttpClient())
-                {
-                    using (var Response = await httpClient.GetAsync($"{Constants.ApiUrl}fooditems/{orderDetail.FoodItemId}"))
-                    {
-                        string apiResponse = await Response.Content.ReadAsStringAsync();
-                        foodItem = JsonConvert.DeserializeObject<FoodItemViewModel>(apiResponse);
-                    }
-
-                    orderDetail.Price = foodItem.Price * orderDetail.Quantity;
-                    price = orderDetail.Price;
-
-                    StringContent content = new StringContent(JsonConvert.SerializeObject(orderDetail), Encoding.UTF8, "application/json");
-                    var response = await httpClient.PostAsync($"{Constants.ApiUrl}orderdetails", content);
-                }
-
-                await IncrementOrderPrice(orderDetail.OrderId, price);
-
-            }
-            else
-            {
-                ViewData["message"] = $"Food Item '{foodItem.Name}' can't be added as specified quantity is unavailable";
-            }
-
-            return RedirectToPage($"/AddItems/{orderDetail.OrderId}");
         }
     }
 }
