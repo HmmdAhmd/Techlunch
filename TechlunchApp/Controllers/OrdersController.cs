@@ -81,9 +81,23 @@ namespace TechlunchApp.Controllers
             return View(Context);
         }
 
+        private async Task UpdateQuantityInGeneralInventory(List<GeneralInventoryViewModel> generalInventoryList)
+        {
+            foreach(GeneralInventoryViewModel generalInventoryObj in generalInventoryList)
+            {
+                using (var httpClient = new HttpClient())
+                {
+                    StringContent content = new StringContent(JsonConvert.SerializeObject(generalInventoryObj), Encoding.UTF8, "application/json");
+                    var response = await httpClient.PutAsync($"{Constants.ApiUrl}generalinventories/{generalInventoryObj.Id}", content);
+
+                }
+            }
+        }
+
         private async Task<bool> CheckIngredientsAvailability(int foodItemId, int quantity)
         {
             List<FoodItemIngredientViewModel> ingredients = new List<FoodItemIngredientViewModel>();
+            List<GeneralInventoryViewModel> generalInventoryList = new List<GeneralInventoryViewModel>();
 
             using (var httpClient = new HttpClient())
             {
@@ -103,14 +117,41 @@ namespace TechlunchApp.Controllers
                         generalInventoryObj = JsonConvert.DeserializeObject<GeneralInventoryViewModel>(apiResponse);
                     }
 
-                    if (generalInventoryObj == null || generalInventoryObj.AvailableQuantity < (quantity * ingredients[i].Quantity))
+                    int Quantity = quantity * ingredients[i].Quantity;
+                    if (generalInventoryObj == null || generalInventoryObj.AvailableQuantity < Quantity)
                     {
                         return false;
+                    }
+                    else
+                    {
+                        generalInventoryObj.AvailableQuantity -= Quantity;
+                        generalInventoryList.Add(generalInventoryObj);
                     }
                 }
             }
 
+            await UpdateQuantityInGeneralInventory(generalInventoryList);
+
             return true;
+        }
+
+        private async Task IncrementOrderPrice(int orderId, float price)
+        {
+            OrderViewModel orderObj = new OrderViewModel();
+
+            using (var httpClient = new HttpClient())
+            {
+                using (var Response = await httpClient.GetAsync($"{Constants.ApiUrl}orders/{orderId}"))
+                {
+                    string apiResponse = await Response.Content.ReadAsStringAsync();
+                    orderObj = JsonConvert.DeserializeObject<OrderViewModel>(apiResponse);
+                }
+
+                orderObj.TotalPrice += price;
+
+                StringContent content = new StringContent(JsonConvert.SerializeObject(orderObj), Encoding.UTF8, "application/json");
+                var response = await httpClient.PutAsync($"{Constants.ApiUrl}orders/{orderId}", content);
+            }
         }
 
         [HttpPost]
@@ -118,12 +159,14 @@ namespace TechlunchApp.Controllers
         {
             bool available = await CheckIngredientsAvailability(orderDetail.FoodItemId, orderDetail.Quantity);
 
+            FoodItemViewModel foodItem = new FoodItemViewModel();
+
             if (available)
             {
+                float price = 0;
+
                 using (var httpClient = new HttpClient())
                 {
-                    FoodItemViewModel foodItem = new FoodItemViewModel();
-
                     using (var Response = await httpClient.GetAsync($"{Constants.ApiUrl}fooditems/{orderDetail.FoodItemId}"))
                     {
                         string apiResponse = await Response.Content.ReadAsStringAsync();
@@ -131,14 +174,18 @@ namespace TechlunchApp.Controllers
                     }
 
                     orderDetail.Price = foodItem.Price * orderDetail.Quantity;
+                    price = orderDetail.Price;
 
                     StringContent content = new StringContent(JsonConvert.SerializeObject(orderDetail), Encoding.UTF8, "application/json");
                     var response = await httpClient.PostAsync($"{Constants.ApiUrl}orderdetails", content);
                 }
+
+                await IncrementOrderPrice(orderDetail.OrderId, price);
+
             }
             else
             {
-                ViewData["message"] = "hello g";
+                ViewData["message"] = $"Food Item '{foodItem.Name}' can't be added as specified quantity is unavailable";
             }
 
             return RedirectToPage($"/AddItems/{orderDetail.OrderId}");

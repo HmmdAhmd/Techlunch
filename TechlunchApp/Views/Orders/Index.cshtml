@@ -74,7 +74,7 @@
                                                         |
                                                         <a class="deleteBtn" href="/orders/delete/@r.Id">Delete</a>
                                                     </td>
-                                                    @if (!@r.Closed)
+                                                    @if (!@r.Confirmed)
                                                     {
                                                         <td>
                                                         <a href="/orders/additems/@r.Id" class="link-warning">

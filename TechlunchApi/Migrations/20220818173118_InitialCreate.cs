@@ -60,7 +60,7 @@ namespace TechlunchApi.Migrations
                     TotalPrice = table.Column<float>(nullable: false),
                     CreatedAt = table.Column<DateTime>(nullable: false),
                     Status = table.Column<bool>(nullable: false),
-                    Closed = table.Column<bool>(nullable: false)
+                    Confirmed = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {

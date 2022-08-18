@@ -8,7 +8,7 @@ namespace TechlunchApi.Models
         public Order()
         {
             Status = true;
-            Closed = false;
+            Confirmed = false;
         }
         public int Id { get; set; }
 
@@ -20,6 +20,6 @@ namespace TechlunchApi.Models
 
         public Boolean Status { get; set; }
 
-        public bool Closed { get; set; }
+        public bool Confirmed { get; set; }
     }
 }
