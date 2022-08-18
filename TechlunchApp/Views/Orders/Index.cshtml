@@ -1,6 +1,8 @@
-﻿@model IEnumerable<IngredientHistoryViewModel>
+﻿@using TechlunchApp.ViewModels
+
+@model IEnumerable<OrderViewModel>
 @{
-    ViewData["Title"] = "Ingredient History";
+    ViewData["Title"] = "All Orders";
     int i = 1;
 }
 
@@ -12,12 +14,12 @@
             <div class="row">
                 <div class="col-12">
                     <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                        <h4 class="mb-sm-0">Ingredient History</h4>
+                        <h4 class="mb-sm-0">Orders</h4>
 
                         <div class="page-title-right">
                             <ol class="breadcrumb m-0">
-                                <li class="breadcrumb-item"><a href="javascript: void(0);">Inventory Items</a></li>
-                                <li class="breadcrumb-item active">Ingredient History</li>
+                                <li class="breadcrumb-item"><a href="javascript: void(0);">Orders</a></li>
+                                <li class="breadcrumb-item active">Show All</li>
                             </ol>
                         </div>
 
@@ -38,10 +40,10 @@
 
                     <div class="card">
                         <div class="card-header align-items-center d-flex">
-                            <h4 class="card-title mb-0 flex-grow-1">Ingredient History - @ViewData["name"]</h4>
+                            <h4 class="card-title mb-0 flex-grow-1">Orders</h4>
                             <div class="flex-shrink-0">
                                 <div class="form-check form-switch form-switch-right form-switch-md">
-                                    <a class="btn btn-warning" href="/inventory">Go Back</a>
+                                    <a class="btn btn-primary" href="/orders/create">Add Order</a>
                                 </div>
                             </div>
                         </div><!-- end card header -->
@@ -54,9 +56,9 @@
                                         <thead>
                                             <tr>
                                                 <th scope="col">No.</th>
-                                                <th scope="col">Quantity</th>
-                                                <th scope="col">Price</th>
-                                                <th scope="col">Added</th>
+                                                <th scope="col">Total Price</th>
+                                                <th scope="col">Created</th>
+                                                <th scope="col">Actions</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -64,9 +66,13 @@
                                             {
                                                 <tr>
                                                     <th>@i</th>
-                                                    <td>@r.Quantity</td>
-                                                    <td>@r.Price</td>
-                                                    <td>@r.AddedOn</td>
+                                                    <td>@r.TotalPrice</td>
+                                                    <td>@r.CreatedAt</td>
+                                                    <td>
+                                                        <a class="edit-btn" href="/orders/details/@r.Id">Details</a>
+                                                        |
+                                                        <a class="deleteBtn" href="/orders/delete/@r.Id">Delete</a>
+                                                    </td>
                                                 </tr>
                                                 i++;
                                             }
