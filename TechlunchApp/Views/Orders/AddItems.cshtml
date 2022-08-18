@@ -35,7 +35,7 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header align-items-center d-flex">
-                            <h4 class="card-title mb-0 flex-grow-1">Add Food Items - Order # @Model.Order.Id - Price: @Model.Order.TotalPrice </h4>
+                            <h4 class="card-title mb-0 flex-grow-1">Add Food Items - Order # @Model.Order.Id </h4>
                             <div class="flex-shrink-0">
                                 <div class="form-check form-switch form-switch-right form-switch-md">
                                     <a class="btn btn-warning" href="/orders">Go Back</a>
@@ -43,11 +43,24 @@
                             </div>
                         </div><!-- end card header -->
 
+                        <div class="card-header">
+                            <div class="row gy-4 mb-2">
+                                <div class="col-xxl-3 col-md-6">
+                                    <label>Price: </label>
+                                    <span>@Model.Order.TotalPrice</span>
+                                </div>
+                                <div class="col-xxl-3 col-md-6">
+                                    <label>Created: </label>
+                                    <span>@Model.Order.CreatedAt</span>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="card-body">
                             <form asp-controller="Orders" asp-action="AddItems" method="post">
                                 <div class="row gy-4 mb-2">
                                     <div class="col-xxl-3 col-md-6">
-                                        <input type="hidden" name="Id" value=""/>
+                                        <input type="hidden" name="Id" value="" />
                                         <input type="hidden" id="OrderId" name="OrderId" value="@Model.Order.Id" />
                                         <div>
                                             <label for="FoodItemId" class="form-label">Food Item</label>
@@ -111,8 +124,7 @@
                                                     <td>@orderDetail.Price</td>
                                                     <td>
                                                         <form asp-controller="OrderDetails" asp-action="Delete" method="post">
-                                                            <input type="hidden" value="@orderDetail.Id" name="orderDetailId" />
-                                                            <input type="hidden" value="@Model.Order.Id" name="orderId" />
+                                                            <input type="hidden" value="@Model.OrderDetails.Id" name="id" />
                                                             <input type="submit" class="link-danger delete-btn" value="Delete" />
                                                         </form>
                                                     </td>
