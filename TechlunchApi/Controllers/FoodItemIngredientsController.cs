@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TechlunchApi.Data;
 using TechlunchApi.Models;
-
 namespace TechlunchApi.Controllers
 {
     [Route("api/[controller]")]
@@ -13,25 +12,17 @@ namespace TechlunchApi.Controllers
     public class FoodItemIngredientsController : ControllerBase
     {
         private readonly TechlunchDbContext _context;
-
         public FoodItemIngredientsController(TechlunchDbContext context)
         {
             _context = context;
         }
-
-       
-
         // GET: api/FoodItemIngredients/5
         //5 will be the Food Item Id
         [HttpGet("{id}")]
         public async Task<ActionResult<IEnumerable<FoodItemIngredients>>> GetFoodItemIngredients(int id)
         {
             return await _context.FoodItemIngredients.Include(c => c.IngredientFK).Where(x => x.FoodItemId == id).ToListAsync();
-           
         }
-
-       
-
         // POST: api/FoodItemIngredients
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         [HttpPost]
@@ -48,20 +39,20 @@ namespace TechlunchApi.Controllers
                 await _context.SaveChangesAsync();
                 return CreatedAtAction("GetFoodItemIngredients", new { id = foodItemIngredients.Id }, foodItemIngredients);
             }
-            else {
+            else
+            {
                 foodItemIngredient.Quantity = foodItemIngredient.Quantity + foodItemIngredients.Quantity;
                 await _context.SaveChangesAsync();
                 return foodItemIngredient;
             }
         }
-
         // DELETE: api/FoodItemIngredients/5
         [HttpDelete("{id}")]
         public async Task<ActionResult<FoodItemIngredients>> DeleteFoodItemIngredients(int id)
         {
             /*this is hard delete because this table contains many to many relationship of ingredient
              and food item, so if we want to remove ingredient from food item so it should be hard
-             deleted from the database*/ 
+             deleted from the database*/
             var foodItemIngredients = await _context.FoodItemIngredients.FindAsync(id);
             if (foodItemIngredients == null)
             {

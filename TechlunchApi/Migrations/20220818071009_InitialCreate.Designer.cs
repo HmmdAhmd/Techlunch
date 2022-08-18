@@ -10,7 +10,7 @@ using TechlunchApi.Data;
 namespace TechlunchApi.Migrations
 {
     [DbContext(typeof(TechlunchDbContext))]
-    [Migration("20220816132319_InitialCreate")]
+    [Migration("20220818071009_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
