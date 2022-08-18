@@ -12,5 +12,7 @@ namespace TechlunchApp.ViewModels
 
         [Required]
         public DateTime CreatedAt { get; set; }
+
+        public bool Closed { get; set; }
     }
 }

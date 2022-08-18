@@ -59,6 +59,7 @@
                                                 <th scope="col">Total Price</th>
                                                 <th scope="col">Created</th>
                                                 <th scope="col">Actions</th>
+                                                <th scope="col"></th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -73,6 +74,15 @@
                                                         |
                                                         <a class="deleteBtn" href="/orders/delete/@r.Id">Delete</a>
                                                     </td>
+                                                    @if (!@r.Closed)
+                                                    {
+                                                        <td>
+                                                        <a href="/orders/additems/@r.Id" class="link-warning">
+                                                            Add Food Items
+                                                            <i class="ri-arrow-right-line align-middle"></i>
+                                                        </a>
+                                                    </td>
+                                                    }
                                                 </tr>
                                                 i++;
                                             }

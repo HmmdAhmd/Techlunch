@@ -66,8 +66,6 @@ namespace TechlunchApi.Controllers
             foodItem.Status = false;
             await _context.SaveChangesAsync();
             return Ok();
-        }
-
-       
+        }  
     }
 }

@@ -8,6 +8,7 @@ namespace TechlunchApi.Models
         public Order()
         {
             Status = true;
+            Closed = false;
         }
         public int Id { get; set; }
 
@@ -18,5 +19,7 @@ namespace TechlunchApi.Models
         public DateTime CreatedAt { get; set; }
 
         public Boolean Status { get; set; }
+
+        public bool Closed { get; set; }
     }
 }

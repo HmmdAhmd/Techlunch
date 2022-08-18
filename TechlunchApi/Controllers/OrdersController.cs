@@ -26,5 +26,29 @@ namespace TechlunchApi.Controllers
             return await _context.Orders.Where(o => o.Status == true)
                 .OrderByDescending(o => o.Id).ToListAsync();
         }
+
+        // GET: api/Orders/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Order>> GetOrder(int id)
+        {
+            var order = await _context.Orders.FindAsync(id);
+
+            if (order == null || order.Status == false)
+            {
+                return NotFound();
+            }
+
+            return Ok(order);
+        }
+
+        // POST: api/Orders
+        [HttpPost]
+        public async Task<ActionResult<Ingredient>> PostOrder(Order order)
+        {
+            _context.Orders.Add(order);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetOrder", new { id = order.Id }, order);
+        }
     }
 }

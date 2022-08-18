@@ -1,93 +1,98 @@
 ﻿@model IEnumerable<FoodItemViewModel>
 @{
-     ViewData["Title"] = "All Food Items";
+    ViewData["Title"] = "All Food Items";
 }
 
-            <div class="main-content">
-                <div class="page-content">
-                    <div class="container-fluid">
+<div class="main-content">
+    <div class="page-content">
+        <div class="container-fluid">
 
-                        <!-- start page title -->
-                        <div class="row">
-                            <div class="col-12">
-                                <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                                    <h4 class="mb-sm-0">Food Items</h4>
+            <!-- start page title -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                        <h4 class="mb-sm-0">Food Items</h4>
 
-                                    <div class="page-title-right">
-                                        <ol class="breadcrumb m-0">
-                                            <li class="breadcrumb-item"><a href="javascript: void(0);">Food Items</a></li>
-                                            <li class="breadcrumb-item active">Show All</li>
-                                        </ol>
-                                    </div>
-
-                                </div>
-                            </div>
+                        <div class="page-title-right">
+                            <ol class="breadcrumb m-0">
+                                <li class="breadcrumb-item"><a href="javascript: void(0);">Food Items</a></li>
+                                <li class="breadcrumb-item active">Show All</li>
+                            </ol>
                         </div>
-                        <!-- end page title -->
 
-
-                        <div class="row">
-                            <div class="col-12">
-                   @* @if (ViewBag.Message != null && ViewBag.Message == "success")
-                    {
-                        <div class="alert alert-success">Food item added succesfully.</div>
-                    }else if(ViewBag.Message != null && ViewBag.Message == "error"){
-                         <div class="alert alert-success">Food item added succesfully.</div>
-                    }*@
-
-                        <div class="card">
-                                    <div class="card-header align-items-center d-flex">
-                                        <h4 class="card-title mb-0 flex-grow-1">Food Items</h4>
-                                        <div class="flex-shrink-0">
-                                            <div class="form-check form-switch form-switch-right form-switch-md">
-                                                <a class="btn btn-primary" href="/fooditem/create">Add Item</a>
-                                            </div>
-                                        </div>
-                                    </div><!-- end card header -->
-
-                                    <div class="card-body">
-                                        
-                                        <div class="live-preview">
-                                            <div class="table-responsive">
-                                                <table class="table align-middle table-nowrap mb-0">
-                                                    <thead>
-                                                        <tr>
-                                                            <th scope="col">No.</th>
-                                                            <th scope="col">Name</th>
-                                                            <th scope="col">Price</th>
-                                                            <th scope="col">Action</th>
-                                                            <th scope="col"></th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                    @{int i = 1;}
-                                                    @foreach (var r in Model){
-                                                            <tr>
-                                                            <th>@i @{i++;}</th>
-                                                            <td>@r.Name</td>
-                                                            <td>@r.Price PKR</td>
-                                                            <td>
-                                                            <form asp-action="Delete" method="post">
-                                                                    <input type="hidden" value="@r.Id" name="ItemId" />
-                                                                    <input type="submit" class="link-danger delete-btn" value="Delete"/>
-                                                            </form>
-                                                            </td>
-                                                            <td><a href="/fooditemingredient/create/@r.Id" class="link-warning">Add Ingredients<i class="ri-arrow-right-line align-middle"></i></a></td>
-                                                            </tr>
-                                                        }
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-
-
-                                        </div>
-                                    </div><!-- end card-body -->
-                                </div><!-- end card -->
-                            </div>
-                            <!-- end col -->
+                    </div>
                 </div>
             </div>
-        </div>
+            <!-- end page title -->
 
-        
+
+            <div class="row">
+                <div class="col-12">
+                    @* @if (ViewBag.Message != null && ViewBag.Message == "success")
+                    {
+                    <div class="alert alert-success">Food item added succesfully.</div>
+                    }else if(ViewBag.Message != null && ViewBag.Message == "error"){
+                    <div class="alert alert-success">Food item added succesfully.</div>
+                    }*@
+
+                    <div class="card">
+                        <div class="card-header align-items-center d-flex">
+                            <h4 class="card-title mb-0 flex-grow-1">Food Items</h4>
+                            <div class="flex-shrink-0">
+                                <div class="form-check form-switch form-switch-right form-switch-md">
+                                    <a class="btn btn-primary" href="/fooditem/create">Add Item</a>
+                                </div>
+                            </div>
+                        </div><!-- end card header -->
+
+                        <div class="card-body">
+
+                            <div class="live-preview">
+                                <div class="table-responsive">
+                                    <table class="table align-middle table-nowrap mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">No.</th>
+                                                <th scope="col">Name</th>
+                                                <th scope="col">Price</th>
+                                                <th scope="col">Action</th>
+                                                <th scope="col"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @{
+                                                int i = 1;
+                                            }
+                                            @foreach (var r in Model)
+                                            {
+                                                <tr>
+                                                    <th>@i @{
+                                                            i++;
+                                                        }</th>
+                                                    <td>@r.Name</td>
+                                                    <td>@r.Price PKR</td>
+                                                    <td>
+                                                        <form asp-action="Delete" method="post">
+                                                            <input type="hidden" value="@r.Id" name="ItemId" />
+                                                            <input type="submit" class="link-danger delete-btn" value="Delete" />
+                                                        </form>
+                                                    </td>
+                                                    <td><a href="/fooditemingredient/create/@r.Id" class="link-warning">Add Ingredients<i class="ri-arrow-right-line align-middle"></i></a></td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </div><!-- end card-body -->
+                </div><!-- end card -->
+            </div>
+            <!-- end col -->
+        </div>
+    </div>
+</div>
+
+

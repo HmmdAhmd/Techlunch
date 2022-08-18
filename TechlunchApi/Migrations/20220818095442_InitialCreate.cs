@@ -59,7 +59,8 @@ namespace TechlunchApi.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     TotalPrice = table.Column<float>(nullable: false),
                     CreatedAt = table.Column<DateTime>(nullable: false),
-                    Status = table.Column<bool>(nullable: false)
+                    Status = table.Column<bool>(nullable: false),
+                    Closed = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
