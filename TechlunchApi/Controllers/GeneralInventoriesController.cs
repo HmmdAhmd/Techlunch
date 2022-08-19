@@ -43,6 +43,20 @@ namespace TechlunchApi.Controllers
             return Ok(generalInventory);
         }
 
+        // GET: api/GeneralInventories/5
+        [HttpGet("IngredientId/{id}")]
+        public async Task<ActionResult<GeneralInventory>> GetGeneralInventoryObj(int id)
+        {
+            var generalInventory = await _context.GeneralInventory.SingleOrDefaultAsync(g => g.IngredientId == id);
+
+            if (generalInventory == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(generalInventory);
+        }
+
         // GET: api/GeneralInventories/Ingredient/5
         [HttpGet("Ingredient/{id}")]
         public async Task<ActionResult<IngredientHistory>> GetIngredientHistory(int id)

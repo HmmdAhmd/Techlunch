@@ -25,7 +25,6 @@
                 </div>
             </div>
             <!-- end page title -->
-
             @if (ViewData["message"].ToString() != String.Empty)
             {
                 <!-- Alert -->
@@ -128,6 +127,9 @@
                                                     <td>@orderDetail.Price</td>
                                                     <td>
                                                         <form asp-controller="OrderDetails" asp-action="Delete" method="post">
+                                                            
+                                                            <input type="hidden" value="@orderDetail.FoodItemId" name="foodItemId" />
+
                                                             <input type="hidden" value="@orderDetail.Id" name="id" />
                                                             <input type="submit" class="link-danger delete-btn" value="Delete" />
                                                         </form>

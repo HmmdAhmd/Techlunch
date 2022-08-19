@@ -30,7 +30,8 @@ namespace TechlunchApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<OrderDetail>> GetOrderDetail(int id)
         {
-            var orderDetail = await _context.OrderDetail.FindAsync(id);
+            var orderDetail = await _context.OrderDetail.Include(o => o.FoodItemFK)
+                .SingleOrDefaultAsync(o => o.Id == id);
 
             if (orderDetail == null)
             {
@@ -56,6 +57,22 @@ namespace TechlunchApi.Controllers
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetOrderDetail", new { id = orderDetail.Id }, orderDetail);
+        }
+
+        // DELETE: api/OrderDetails/5
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<OrderDetail>> DeleteOrderDetail(int id)
+        {
+            var orderDetail = await _context.OrderDetail.FindAsync(id);
+            if (orderDetail == null)
+            {
+                return NotFound();
+            }
+
+            _context.OrderDetail.Remove(orderDetail);
+            await _context.SaveChangesAsync();
+
+            return orderDetail;
         }
 
     }

@@ -13,6 +13,8 @@ namespace TechlunchApp.ViewModels
         [Required]
         public DateTime CreatedAt { get; set; }
 
+        public Boolean Status { get; set; }
+
         public bool Confirmed { get; set; }
     }
 }
