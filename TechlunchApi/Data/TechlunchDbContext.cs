@@ -1,15 +1,24 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using TechlunchApi.Models;
 
 namespace TechlunchApi.Data
 {
-    public class TechlunchDbContext : DbContext
+    public class TechlunchDbContext : IdentityDbContext
     {
+        private readonly DbContextOptions _options;
         public TechlunchDbContext(DbContextOptions<TechlunchDbContext> options)
         : base(options)
         {
+            _options = options;
         }
-        public DbSet<Admin> Admins { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+        }
+
+        //public DbSet<Admin> Admins { get; set; }
         public DbSet<Ingredient> Ingredients { get; set; }
         public DbSet<Inventory> Inventory { get; set; }
         public DbSet<FoodItem> FoodItems { get; set; }
