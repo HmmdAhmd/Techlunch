@@ -35,6 +35,39 @@ namespace TechlunchApp.Controllers
             return View();
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Details(int id)
+        {
+            List<OrderDetailsViewModel> orderDetailsList = new List<OrderDetailsViewModel>();
+            OrderViewModel orderObj = new OrderViewModel();
+
+            using (var httpClient = new HttpClient())
+            {
+                using (var response = await httpClient.GetAsync($"{Constants.ApiUrl}orders/{id}"))
+                {
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        return RedirectToAction("Index");
+                    }
+
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    orderObj = JsonConvert.DeserializeObject<OrderViewModel>(apiResponse);
+                }
+
+                using (var response = await httpClient.GetAsync($"{Constants.ApiUrl}orderdetails/order/{id}"))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    orderDetailsList = JsonConvert.DeserializeObject<List<OrderDetailsViewModel>>(apiResponse);
+                }
+
+            }
+
+            dynamic Context = new ExpandoObject();
+            Context.Order = orderObj;
+            Context.OrderDetailList = orderDetailsList;
+            return View(Context);
+        }
+
         [HttpPost]
         public async Task<IActionResult> Create(OrderViewModel orderObj)
         {
