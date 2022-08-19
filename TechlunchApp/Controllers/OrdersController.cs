@@ -35,6 +35,29 @@ namespace TechlunchApp.Controllers
             return View();
         }
 
+        [HttpPost]
+        public async Task<IActionResult> Confirm(int id)
+        {
+            OrderViewModel orderObj = new OrderViewModel();
+
+            using (var httpClient = new HttpClient())
+            {
+                using (var Response = await httpClient.GetAsync($"{Constants.ApiUrl}orders/{id}"))
+                {
+                    string apiResponse = await Response.Content.ReadAsStringAsync();
+                    orderObj = JsonConvert.DeserializeObject<OrderViewModel>(apiResponse);
+
+                    orderObj.Confirmed = true;
+
+                }
+
+                StringContent content = new StringContent(JsonConvert.SerializeObject(orderObj), Encoding.UTF8, "application/json");
+                var response = await httpClient.PutAsync($"{Constants.ApiUrl}orders/{id}", content);
+
+            }
+            return RedirectToAction("Index");
+        }
+
         [HttpGet]
         public async Task<IActionResult> Details(int id)
         {
