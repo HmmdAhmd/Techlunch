@@ -48,9 +48,24 @@ namespace TechlunchApp.Controllers
         [HttpGet]
         public async Task<IActionResult> AddItems(int id, string message = "")
         {
+            OrderViewModel orderObj = new OrderViewModel();
+
+            using (var httpClient = new HttpClient())
+            {
+                using (var response = await httpClient.GetAsync($"{Constants.ApiUrl}orders/{id}"))
+                {
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        return RedirectToAction("Index");
+                    }
+
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    orderObj = JsonConvert.DeserializeObject<OrderViewModel>(apiResponse);
+                }
+            }
+
             List<FoodItemViewModel> foodItems = new List<FoodItemViewModel>();
             List<OrderDetailsViewModel> orderDetailsList = new List<OrderDetailsViewModel>();
-            OrderViewModel orderObj = new OrderViewModel();
 
             using (var httpClient = new HttpClient())
             {
@@ -64,12 +79,6 @@ namespace TechlunchApp.Controllers
                 {
                     string apiResponse = await response.Content.ReadAsStringAsync();
                     orderDetailsList = JsonConvert.DeserializeObject<List<OrderDetailsViewModel>>(apiResponse);
-                }
-
-                using (var response = await httpClient.GetAsync($"{Constants.ApiUrl}orders/{id}"))
-                {
-                    string apiResponse = await response.Content.ReadAsStringAsync();
-                    orderObj = JsonConvert.DeserializeObject<OrderViewModel>(apiResponse);
                 }
 
             }
