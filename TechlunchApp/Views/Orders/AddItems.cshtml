@@ -5,11 +5,6 @@
     int price = 0;
 }
 
-@if (ViewData["message"].ToString() != String.Empty)
-{
-    <script>alert("@ViewData["message"]")</script>
-}
-
 <div class="main-content">
     <div class="page-content">
         <div class="container-fluid">
@@ -30,6 +25,15 @@
                 </div>
             </div>
             <!-- end page title -->
+
+            @if (ViewData["message"].ToString() != String.Empty)
+            {
+                <!-- Alert -->
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <strong>@ViewData["message"]</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
 
             <div class="row">
                 <div class="col-12">

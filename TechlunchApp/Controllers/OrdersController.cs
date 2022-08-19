@@ -13,6 +13,8 @@ namespace TechlunchApp.Controllers
 {
     public class OrdersController : Controller
     {
+        private static string message = "";
+
         public async Task<IActionResult> Index()
         {
             List<OrderViewModel> orders = new List<OrderViewModel>();
@@ -46,7 +48,7 @@ namespace TechlunchApp.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> AddItems(int id, string message = "")
+        public async Task<IActionResult> AddItems(int id)
         {
             OrderViewModel orderObj = new OrderViewModel();
 
@@ -89,6 +91,7 @@ namespace TechlunchApp.Controllers
             Context.Order = orderObj;
 
             ViewData["message"] = message;
+            message = "";
             return View(Context);
         }
 
@@ -123,12 +126,13 @@ namespace TechlunchApp.Controllers
 
                 await IncrementOrderPrice(orderDetail.OrderId, price);
 
-                return RedirectToPage("AddItems", "Orders", new {id = orderDetail.OrderId});
+
+            } else
+            {
+                message = $"Food Item: {foodItem.Name} cannot be added as specified quantity is unavailable";
             }
 
-            string Message = $"Food Item: {foodItem.Name} cannot be added as specified quantity is unavailable";
-
-            return RedirectToPage("AddItems", "Orders", new { id = orderDetail.OrderId, message = Message });
+            return RedirectToAction("AddItems", "Orders", new { id = orderDetail.OrderId });
         }
 
         private async Task UpdateQuantityInGeneralInventory(List<GeneralInventoryViewModel> generalInventoryList)
