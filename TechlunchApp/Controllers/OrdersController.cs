@@ -123,11 +123,12 @@ namespace TechlunchApp.Controllers
 
                 await IncrementOrderPrice(orderDetail.OrderId, price);
 
-                return RedirectToPage($"/AddItems/{orderDetail.OrderId}");
+                return RedirectToPage("AddItems", "Orders", new {id = orderDetail.OrderId});
             }
 
-            string message = $"Food Item: {foodItem.Name} cannot be added as specified quantity is unavailable";
-            return await AddItems(1, message);
+            string Message = $"Food Item: {foodItem.Name} cannot be added as specified quantity is unavailable";
+
+            return RedirectToPage("AddItems", "Orders", new { id = orderDetail.OrderId, message = Message });
         }
 
         private async Task UpdateQuantityInGeneralInventory(List<GeneralInventoryViewModel> generalInventoryList)
