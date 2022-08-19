@@ -76,10 +76,23 @@
                                                                 <input type="hidden" value="@r.Id" name="id" />
                                                                 <input type="submit" class="link-primary confirm-btn edit-btn" value="Confirm" />
                                                             </form>
+                                                            <span>|</span>
                                                         }
                                                         else if (@r.Confirmed)
                                                         {
                                                             <a class="edit-btn" href="/orders/details/@r.Id">Details</a>
+                                                            <span>|</span>
+                                                        }
+                                                        @if (@r.TotalPrice == 0)
+                                                        {
+                                                            <form asp-controller="DeleteOrder" asp-action="DeleteWithoutConfirm" method="post" style="display:inline-block;">
+                                                            <input type="hidden" value="@r.Id" name="id" />
+                                                            <input type="submit" class="link-danger delete-btn" value="Delete" />
+                                                            </form>
+                                                        }
+                                                        else
+                                                        {
+                                                            <a class="deleteBtn" href="/orders/delete/@r.Id">Cancel</a>
                                                         }
                                                     </td>
                                                     <td>

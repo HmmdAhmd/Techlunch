@@ -191,6 +191,22 @@ namespace TechlunchApp.Controllers
             return RedirectToAction("AddItems", "Orders", new { id = orderDetail.OrderId });
         }
 
+        public async Task<IActionResult> Delete(int id)
+        {
+            OrderViewModel orderObj = new OrderViewModel();
+
+            using (var httpClient = new HttpClient())
+            {
+                using (var Response = await httpClient.GetAsync($"{Constants.ApiUrl}orders/{id}"))
+                {
+                    string apiResponse = await Response.Content.ReadAsStringAsync();
+                    orderObj = JsonConvert.DeserializeObject<OrderViewModel>(apiResponse);
+                }
+            }
+
+            return View(orderObj);
+        }
+
         private async Task UpdateQuantityInGeneralInventory(List<GeneralInventoryViewModel> generalInventoryList)
         {
             foreach (GeneralInventoryViewModel generalInventoryObj in generalInventoryList)
