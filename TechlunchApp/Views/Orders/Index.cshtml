@@ -70,19 +70,27 @@
                                                     <td>@r.TotalPrice</td>
                                                     <td>@r.CreatedAt</td>
                                                     <td>
-                                                        <a class="edit-btn" href="/orders/details/@r.Id">Details</a>
-                                                        |
-                                                        <a class="deleteBtn" href="/orders/delete/@r.Id">Delete</a>
+                                                        @if (!@r.Confirmed && @r.TotalPrice != 0)
+                                                        {
+                                                            <form asp-action="Confirm" method="post" style="display:inline-block;">
+                                                                <input type="hidden" value="@r.Id" name="id" />
+                                                                <input type="submit" class="link-primary confirm-btn edit-btn" value="Confirm" />
+                                                            </form>
+                                                        }
+                                                        else if (@r.Confirmed)
+                                                        {
+                                                            <a class="edit-btn" href="/orders/details/@r.Id">Details</a>
+                                                        }
                                                     </td>
-                                                    @if (!@r.Confirmed)
-                                                    {
-                                                        <td>
-                                                        <a href="/orders/additems/@r.Id" class="link-warning">
-                                                            Add Food Items
-                                                            <i class="ri-arrow-right-line align-middle"></i>
-                                                        </a>
+                                                    <td>
+                                                        @if (!@r.Confirmed)
+                                                        {
+                                                            <a href="/orders/additems/@r.Id" class="link-warning">
+                                                                Add Food Items
+                                                                <i class="ri-arrow-right-line align-middle"></i>
+                                                            </a>
+                                                        }
                                                     </td>
-                                                    }
                                                 </tr>
                                                 i++;
                                             }

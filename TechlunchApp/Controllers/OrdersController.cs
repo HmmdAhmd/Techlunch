@@ -13,6 +13,8 @@ namespace TechlunchApp.Controllers
 {
     public class OrdersController : Controller
     {
+        private static string message = "";
+
         public async Task<IActionResult> Index()
         {
             List<OrderViewModel> orders = new List<OrderViewModel>();
@@ -34,6 +36,62 @@ namespace TechlunchApp.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> Confirm(int id)
+        {
+            OrderViewModel orderObj = new OrderViewModel();
+
+            using (var httpClient = new HttpClient())
+            {
+                using (var Response = await httpClient.GetAsync($"{Constants.ApiUrl}orders/{id}"))
+                {
+                    string apiResponse = await Response.Content.ReadAsStringAsync();
+                    orderObj = JsonConvert.DeserializeObject<OrderViewModel>(apiResponse);
+
+                    orderObj.Confirmed = true;
+
+                }
+
+                StringContent content = new StringContent(JsonConvert.SerializeObject(orderObj), Encoding.UTF8, "application/json");
+                var response = await httpClient.PutAsync($"{Constants.ApiUrl}orders/{id}", content);
+
+            }
+            return RedirectToAction("Index");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Details(int id)
+        {
+            List<OrderDetailsViewModel> orderDetailsList = new List<OrderDetailsViewModel>();
+            OrderViewModel orderObj = new OrderViewModel();
+
+            using (var httpClient = new HttpClient())
+            {
+                using (var response = await httpClient.GetAsync($"{Constants.ApiUrl}orders/{id}"))
+                {
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        return RedirectToAction("Index");
+                    }
+
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    orderObj = JsonConvert.DeserializeObject<OrderViewModel>(apiResponse);
+                }
+
+                using (var response = await httpClient.GetAsync($"{Constants.ApiUrl}orderdetails/order/{id}"))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    orderDetailsList = JsonConvert.DeserializeObject<List<OrderDetailsViewModel>>(apiResponse);
+                }
+
+            }
+
+            dynamic Context = new ExpandoObject();
+            Context.Order = orderObj;
+            Context.OrderDetailList = orderDetailsList;
+            return View(Context);
+        }
+
+        [HttpPost]
         public async Task<IActionResult> Create(OrderViewModel orderObj)
         {
             using (var httpClient = new HttpClient())
@@ -46,7 +104,7 @@ namespace TechlunchApp.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> AddItems(int id, string message = "")
+        public async Task<IActionResult> AddItems(int id)
         {
             OrderViewModel orderObj = new OrderViewModel();
 
@@ -89,6 +147,7 @@ namespace TechlunchApp.Controllers
             Context.Order = orderObj;
 
             ViewData["message"] = message;
+            message = "";
             return View(Context);
         }
 
@@ -123,11 +182,13 @@ namespace TechlunchApp.Controllers
 
                 await IncrementOrderPrice(orderDetail.OrderId, price);
 
-                return RedirectToPage($"/AddItems/{orderDetail.OrderId}");
+
+            } else
+            {
+                message = $"Food Item: {foodItem.Name} cannot be added as specified quantity is unavailable";
             }
 
-            string message = $"Food Item: {foodItem.Name} cannot be added as specified quantity is unavailable";
-            return await AddItems(1, message);
+            return RedirectToAction("AddItems", "Orders", new { id = orderDetail.OrderId });
         }
 
         private async Task UpdateQuantityInGeneralInventory(List<GeneralInventoryViewModel> generalInventoryList)
