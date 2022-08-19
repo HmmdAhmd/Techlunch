@@ -189,6 +189,9 @@ namespace TechlunchApi.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<float>("EstimatedPrice")
+                        .HasColumnType("real");
+
                     b.Property<int>("FoodItemId")
                         .HasColumnType("int");
 

@@ -29,6 +29,10 @@ namespace TechlunchApi.Models
         [Required]
         public float Price { get; set; }
 
+        [Required]
+        public float EstimatedPrice { get; set; }
+
+
     }
 }
 

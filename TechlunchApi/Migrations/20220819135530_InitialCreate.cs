@@ -146,7 +146,8 @@ namespace TechlunchApi.Migrations
                     OrderId = table.Column<int>(nullable: false),
                     FoodItemId = table.Column<int>(nullable: false),
                     Quantity = table.Column<int>(nullable: false),
-                    Price = table.Column<float>(nullable: false)
+                    Price = table.Column<float>(nullable: false),
+                    EstimatedPrice = table.Column<float>(nullable: false)
                 },
                 constraints: table =>
                 {
