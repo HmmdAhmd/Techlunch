@@ -154,7 +154,7 @@ namespace TechlunchApp.Controllers
         [HttpPost]
         public async Task<IActionResult> AddItems(OrderDetailsViewModel orderDetail)
         {
-            bool available = await CheckIngredientsAvailability(orderDetail.FoodItemId, orderDetail.Quantity);
+            float estPrice = await CheckIngredientsAvailability(orderDetail.FoodItemId, orderDetail.Quantity);
 
             FoodItemViewModel foodItem = new FoodItemViewModel();
 
@@ -167,13 +167,14 @@ namespace TechlunchApp.Controllers
                 }
             }
 
-            if (available)
+            if (estPrice != 0)
             {
                 float price = 0;
 
                 using (var httpClient = new HttpClient())
                 {
                     orderDetail.Price = foodItem.Price * orderDetail.Quantity;
+                    orderDetail.EstimatedPrice = estPrice;
                     price = orderDetail.Price;
 
                     StringContent content = new StringContent(JsonConvert.SerializeObject(orderDetail), Encoding.UTF8, "application/json"); ;
@@ -220,10 +221,12 @@ namespace TechlunchApp.Controllers
             }
         }
 
-        private async Task<bool> CheckIngredientsAvailability(int foodItemId, int quantity)
+        private async Task<float> CheckIngredientsAvailability(int foodItemId, int quantity)
         {
             List<FoodItemIngredientViewModel> ingredients = new List<FoodItemIngredientViewModel>();
             List<GeneralInventoryViewModel> generalInventoryList = new List<GeneralInventoryViewModel>();
+
+            float estPrice = 0;
 
             using (var httpClient = new HttpClient())
             {
@@ -246,10 +249,11 @@ namespace TechlunchApp.Controllers
                     int Quantity = quantity * ingredients[i].Quantity;
                     if (generalInventoryObj == null || generalInventoryObj.AvailableQuantity < Quantity)
                     {
-                        return false;
+                        return 0;
                     }
                     else
                     {
+                        estPrice += generalInventoryObj.AveragePrice * Quantity;
                         generalInventoryObj.AvailableQuantity -= Quantity;
                         generalInventoryList.Add(generalInventoryObj);
                     }
@@ -258,7 +262,7 @@ namespace TechlunchApp.Controllers
 
             await UpdateQuantityInGeneralInventory(generalInventoryList);
 
-            return true;
+            return estPrice;
         }
 
         private async Task IncrementOrderPrice(int orderId, float price)
