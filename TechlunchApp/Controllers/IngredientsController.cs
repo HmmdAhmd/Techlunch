@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using TechlunchApp.Common;
 using TechlunchApp.ViewModels;
@@ -22,6 +23,64 @@ namespace TechlunchApp.Controllers
                 }
             }
             return View(ingredients);
+        }
+
+        [HttpGet]
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create(IngredientViewModel ingredientObj)
+        {
+            using (var httpClient = new HttpClient())
+            {
+                StringContent content = new StringContent(JsonConvert.SerializeObject(ingredientObj), Encoding.UTF8, "application/json");
+                var response = await httpClient.PostAsync($"{Constants.ApiUrl}ingredients", content);
+
+            }
+            return RedirectToAction("Index");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            IngredientViewModel ingredient = new IngredientViewModel();
+            using (var httpClient = new HttpClient())
+            {
+                using (var response = await httpClient.GetAsync($"{Constants.ApiUrl}ingredients/{id}"))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    ingredient = JsonConvert.DeserializeObject<IngredientViewModel>(apiResponse);
+                }
+            }
+            return View(ingredient);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(IngredientViewModel ingredientObj)
+        {
+            using (var httpClient = new HttpClient())
+            {
+                StringContent content = new StringContent(JsonConvert.SerializeObject(ingredientObj), Encoding.UTF8, "application/json");
+                var response = await httpClient.PutAsync($"{Constants.ApiUrl}ingredients/{ingredientObj.Id}", content);
+
+            }
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete(int id)
+        {
+            using (var httpClient = new HttpClient())
+            {
+                using (var response = await httpClient.DeleteAsync($"{Constants.ApiUrl}ingredients/{id}"))
+                {
+                    await response.Content.ReadAsStringAsync();
+                }
+            }
+            return RedirectToAction("Index");
         }
 
     }

@@ -1,0 +1,155 @@
+﻿@model dynamic
+@{
+    ViewData["Title"] = "Order - Add Food Items";
+    int i = 1;
+    int price = 0;
+}
+
+<div class="main-content">
+    <div class="page-content">
+        <div class="container-fluid">
+            <!-- start page title -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                        <h4 class="mb-sm-0">Order - Add Food Items</h4>
+
+                        <div class="page-title-right">
+                            <ol class="breadcrumb m-0">
+                                <li class="breadcrumb-item"><a href="javascript: void(0);">Order</a></li>
+                                <li class="breadcrumb-item active">Add Food Items</li>
+                            </ol>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <!-- end page title -->
+            @if (ViewData["message"].ToString() != String.Empty)
+            {
+                <!-- Alert -->
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <strong>@ViewData["message"]</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header align-items-center d-flex">
+                            <h4 class="card-title mb-0 flex-grow-1">Add Food Items - Order # @Model.Order.Id </h4>
+                            <div class="flex-shrink-0">
+                                <div class="form-check form-switch form-switch-right form-switch-md">
+                                    <a class="btn btn-warning" href="/orders">Go Back</a>
+                                </div>
+                            </div>
+                        </div><!-- end card header -->
+
+                        <div class="card-header">
+                            <div class="row gy-4 mb-2">
+                                <div class="col-xxl-3 col-md-6">
+                                    <label>Price: </label>
+                                    <span>@Model.Order.TotalPrice</span>
+                                </div>
+                                <div class="col-xxl-3 col-md-6">
+                                    <label>Created: </label>
+                                    <span>@Model.Order.CreatedAt</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            <form asp-controller="Orders" asp-action="AddItems" method="post">
+                                <div class="row gy-4 mb-2">
+                                    <div class="col-xxl-3 col-md-6">
+                                        <input type="hidden" name="Id" value="" />
+                                        <input type="hidden" id="OrderId" name="OrderId" value="@Model.Order.Id" />
+                                        <div>
+                                            <label for="FoodItemId" class="form-label">Food Item</label>
+                                            <select class="form-select mb-3" name="FoodItemId" required>
+                                                <option selected value="">Select Food Item</option>
+                                                @foreach (FoodItemViewModel foodItem in Model.FoodItems)
+                                                {
+                                                    <option value="@foodItem.Id">@foodItem.Name</option>
+                                                }
+                                            </select>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-xxl-3 col-md-6">
+                                        <div>
+                                            <label for="Quantity" class="form-label">Quantity</label>
+                                            <input type="number" class="form-control" name="Quantity" id="Quantity" required>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <input hidden type="number" class="form-control" name="Price" id="Price" value="@price" required>
+
+                                <input hidden type="number" class="form-control" name="EstimatedPrice" id="EstimatedPrice" value="@price" required>
+
+                                <button class="btn btn-primary mt-2">Save</button>
+                            </form>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header align-items-center d-flex">
+                            <h4 class="card-title mb-0 flex-grow-1">Food Items</h4>
+                        </div><!-- end card header -->
+
+                        <div class="card-body">
+
+                            <div class="live-preview">
+                                <div class="table-responsive">
+                                    <table class="table align-middle table-nowrap mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">No.</th>
+                                                <th scope="col">Food Item</th>
+                                                <th scope="col">Quantity</th>
+                                                <th scope="col">Price</th>
+                                                <th scope="col"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (OrderDetailsViewModel orderDetail in Model.OrderDetails)
+                                            {
+                                                <tr>
+                                                    <th scope="row">@i</th>
+                                                    <td>@orderDetail.FoodItemFK.Name</td>
+                                                    <td>@orderDetail.Quantity</td>
+                                                    <td>@orderDetail.Price</td>
+                                                    <td>
+                                                        <form asp-controller="OrderDetails" asp-action="Delete" method="post">
+                                                            
+                                                            <input type="hidden" value="@orderDetail.FoodItemId" name="foodItemId" />
+
+                                                            <input type="hidden" value="@orderDetail.Id" name="id" />
+                                                            <input type="submit" class="link-danger delete-btn" value="Delete" />
+                                                        </form>
+                                                    </td>
+                                                </tr>
+                                                i++;
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </div><!-- end card-body -->
+                </div><!-- end card -->
+            </div>
+
+        </div>
+    </div>
+</div>

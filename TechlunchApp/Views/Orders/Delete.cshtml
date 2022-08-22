@@ -1,0 +1,79 @@
+﻿@using TechlunchApp.ViewModels
+
+@model OrderViewModel
+@{
+    ViewData["Title"] = "Delete Order";
+}
+
+<div class="main-content">
+    <div class="page-content">
+        <div class="container-fluid">
+
+            <!-- start page title -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                        <h4 class="mb-sm-0">Delete Order</h4>
+
+                        <div class="page-title-right">
+                            <ol class="breadcrumb m-0">
+                                <li class="breadcrumb-item"><a href="javascript: void(0);">Order</a></li>
+                                <li class="breadcrumb-item active">Delete</li>
+                            </ol>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <!-- end page title -->
+
+
+            <div class="row">
+                <div class="col-12">
+                    @* @if (ViewBag.Message != null && ViewBag.Message == "success")
+                    {
+                    <div class="alert alert-success">Food item added succesfully.</div>
+                    }else if(ViewBag.Message != null && ViewBag.Message == "error"){
+                    <div class="alert alert-success">Food item added succesfully.</div>
+                    }*@
+
+                    <div class="card">
+                        <div class="card-header align-items-center d-flex">
+                            <h4 class="card-title mb-0 flex-grow-1">Delete - Order # @Model.Id</h4>
+                            <div class="flex-shrink-0">
+                                <div class="form-check form-switch form-switch-right form-switch-md">
+                                    <a class="btn btn-primary" href="/orders">Go Back</a>
+                                </div>
+                            </div>
+                        </div><!-- end card header -->
+
+                        <div class="card-body">
+                            <div class="row gy-4 mb-2">
+                                <div class="col-xxl-12 col-md-12">
+                                    <label>Do you want to add all food ingredients back to inventory?</label>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col">
+                                    <form asp-controller="DeleteOrder" asp-action="Delete" method="post" style="display:inline-block;margin-right:10px;">
+                                        <input type="hidden" value="@Model.Id" name="id" />
+                                        <input type="submit" class="btn btn-primary" value="Yes" />
+                                    </form>
+
+                                    <form asp-controller="DeleteOrder" asp-action="DeleteWithoutConfirm" method="post" style="display:inline-block;">
+                                        <input type="hidden" value="@Model.Id" name="id" />
+                                        <input type="submit" class="btn btn-outline-secondary" value="No" />
+                                    </form>
+
+                                </div>
+                            </div>
+                        </div>
+
+                    </div><!-- end card-body -->
+                </div><!-- end card -->
+            </div>
+            <!-- end col -->
+        </div>
+    </div>
+</div>

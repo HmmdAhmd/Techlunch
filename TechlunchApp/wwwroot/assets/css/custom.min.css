@@ -4,5 +4,26 @@
     background: none !important;
     border: none;
     padding: 0 !important;
-    
 }
+
+.confirm-btn {
+    background: none !important;
+    border: none;
+    padding: 0 !important;
+}
+
+.edit-btn {
+    color: dodgerblue;
+}
+
+    .edit-btn:hover {
+        color: darkblue;
+    }
+
+.deleteBtn {
+    color: red;
+}
+
+    .deleteBtn:hover {
+        color: darkred;
+    }

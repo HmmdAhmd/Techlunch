@@ -5,7 +5,7 @@ namespace TechlunchApp.ViewModels
     {
         public int Id { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Please enter name")]
         public string Name { get; set; }
     }
 }

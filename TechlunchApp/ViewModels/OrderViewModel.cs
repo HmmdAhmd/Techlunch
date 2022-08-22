@@ -1,15 +1,10 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace TechlunchApi.Models
+namespace TechlunchApp.ViewModels
 {
-    public class Order
+    public class OrderViewModel
     {
-        public Order()
-        {
-            Status = true;
-            Confirmed = false;
-        }
         public int Id { get; set; }
 
         [Required]

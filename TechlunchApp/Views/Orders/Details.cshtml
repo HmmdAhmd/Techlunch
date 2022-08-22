@@ -1,8 +1,8 @@
 ﻿@using TechlunchApp.ViewModels
 
-@model IEnumerable<IngredientViewModel>
+@model dynamic
 @{
-    ViewData["Title"] = "All Ingredients";
+    ViewData["Title"] = "Order - Details";
     int i = 1;
 }
 
@@ -14,12 +14,12 @@
             <div class="row">
                 <div class="col-12">
                     <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                        <h4 class="mb-sm-0">Ingredients</h4>
+                        <h4 class="mb-sm-0">Order Details</h4>
 
                         <div class="page-title-right">
                             <ol class="breadcrumb m-0">
-                                <li class="breadcrumb-item"><a href="javascript: void(0);">Ingredients</a></li>
-                                <li class="breadcrumb-item active">Show All</li>
+                                <li class="breadcrumb-item"><a href="javascript: void(0);">Order</a></li>
+                                <li class="breadcrumb-item active">Details</li>
                             </ol>
                         </div>
 
@@ -40,40 +40,47 @@
 
                     <div class="card">
                         <div class="card-header align-items-center d-flex">
-                            <h4 class="card-title mb-0 flex-grow-1">Ingredients</h4>
+                            <h4 class="card-title mb-0 flex-grow-1">Details - Order # @Model.Order.Id</h4>
                             <div class="flex-shrink-0">
                                 <div class="form-check form-switch form-switch-right form-switch-md">
-                                    <a class="btn btn-primary" href="/ingredients/create">Add Ingredient</a>
+                                    <a class="btn btn-warning" href="/orders">Go Back</a>
                                 </div>
                             </div>
                         </div><!-- end card header -->
 
-                        <div class="card-body">
+                        <div class="card-header">
+                            <div class="row gy-4 mb-2">
+                                <div class="col-xxl-3 col-md-6">
+                                    <label>Price: </label>
+                                    <span>@Model.Order.TotalPrice</span>
+                                </div>
+                                <div class="col-xxl-3 col-md-6">
+                                    <label>Created: </label>
+                                    <span>@Model.Order.CreatedAt</span>
+                                </div>
+                            </div>
+                        </div>
 
+                        <div class="card-body">
                             <div class="live-preview">
                                 <div class="table-responsive">
                                     <table class="table align-middle table-nowrap mb-0">
                                         <thead>
                                             <tr>
                                                 <th scope="col">No.</th>
-                                                <th scope="col">Name</th>
-                                                <th scope="col">Action</th>
+                                                <th scope="col">FoodItem</th>
+                                                <th scope="col">Quantity</th>
+                                                <th scope="col">Price</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach (var r in Model)
+                                            @foreach (OrderDetailsViewModel r in Model.OrderDetailList)
                                             {
                                                 <tr>
                                                     <th>@i</th>
-                                                    <td>@r.Name</td>
-                                                    <td>
-                                                        <a class="edit-btn" href="/ingredients/edit/@r.Id">Edit</a>
-                                                        |
-                                                        <form asp-action="Delete" method="post" style="display:inline-block;">
-                                                            <input type="hidden" value="@r.Id" name="id" />
-                                                            <input type="submit" class="link-danger delete-btn" value="Delete" />
-                                                        </form>
-                                                    </td>
+                                                    <td>@r.FoodItemFK.Name</td>
+                                                    <td>@r.Quantity</td>
+                                                    <td>@r.Price</td>
                                                 </tr>
                                                 i++;
                                             }

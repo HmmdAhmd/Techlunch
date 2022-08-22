@@ -6,17 +6,12 @@ using System.Dynamic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using TechlunchApp.Common;
 using TechlunchApp.ViewModels;
-
 namespace TechlunchApp.Controllers
 {
     public class FoodItemIngredientController : Controller
     {
-        private readonly string _apiUrl;
-        public FoodItemIngredientController(IConfiguration configuration)
-        {
-            _apiUrl = configuration.GetValue<string>("apiUrl");
-        }
         public async Task<IActionResult> Create(int id)
         {
             List<FoodItemIngredientViewModel> FoodItemIngredients = new List<FoodItemIngredientViewModel>();
@@ -24,34 +19,28 @@ namespace TechlunchApp.Controllers
             FoodItemViewModel FoodItem = new FoodItemViewModel();
             using (var httpClient = new HttpClient())
             {
-                using (var response = await httpClient.GetAsync($"{_apiUrl}fooditemingredients/{id}"))
+                using (var response = await httpClient.GetAsync($"{Constants.ApiUrl}fooditemingredients/{id}"))
                 {
                     string apiResponse = await response.Content.ReadAsStringAsync();
                     FoodItemIngredients = JsonConvert.DeserializeObject<List<FoodItemIngredientViewModel>>(apiResponse);
-
                 }
-                using (var IngredientsResponse = await httpClient.GetAsync($"{_apiUrl}Ingredients"))
+                using (var IngredientsResponse = await httpClient.GetAsync($"{Constants.ApiUrl}Ingredients"))
                 {
                     string IngredientApiResponse = await IngredientsResponse.Content.ReadAsStringAsync();
                     Ingredients = JsonConvert.DeserializeObject<List<IngredientViewModel>>(IngredientApiResponse);
-
                 }
-
-                using (var FoodItemResponse = await httpClient.GetAsync($"{_apiUrl}FoodItems/{id}"))
+                using (var FoodItemResponse = await httpClient.GetAsync($"{Constants.ApiUrl}FoodItems/{id}"))
                 {
                     string FooddItemApiResponse = await FoodItemResponse.Content.ReadAsStringAsync();
                     FoodItem = JsonConvert.DeserializeObject<FoodItemViewModel>(FooddItemApiResponse);
                 }
             }
-
             dynamic Context = new ExpandoObject();
             Context.FoodItem = FoodItem;
             Context.Ingredients = Ingredients;
             Context.FoodItemIngredients = FoodItemIngredients;
             return View("Index", Context);
         }
-
-
         [HttpPost]
         public async Task<IActionResult> Create(FoodItemIngredientViewModel FoodItemIngredientObj)
         {
@@ -59,20 +48,17 @@ namespace TechlunchApp.Controllers
             using (var httpClient = new HttpClient())
             {
                 StringContent content = new StringContent(JsonConvert.SerializeObject(FoodItemIngredientObj), Encoding.UTF8, "application/json");
-                var response = await httpClient.PostAsync($"{_apiUrl}FoodItemIngredients", content);
+                var response = await httpClient.PostAsync($"{Constants.ApiUrl}FoodItemIngredients", content);
                 string FooddItemApiResponse = await response.Content.ReadAsStringAsync();
             }
-
             return RedirectToAction("Create");
-
         }
-
         [HttpPost]
         public async Task<IActionResult> Delete(int ItemId, int FoodItemId)
         {
             using (var httpClient = new HttpClient())
             {
-                using (var response = await httpClient.DeleteAsync($"{_apiUrl}FoodItemIngredients/{ItemId}"))
+                using (var response = await httpClient.DeleteAsync($"{Constants.ApiUrl}FoodItemIngredients/{ItemId}"))
                 {
                     string apiResponse = await response.Content.ReadAsStringAsync();
                 }
