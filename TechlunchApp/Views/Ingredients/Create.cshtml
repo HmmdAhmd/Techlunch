@@ -43,7 +43,8 @@
                                     <div class="col-xxl-3 col-md-6">
                                         <div>
                                             <label for="Name" class="form-label">Name</label>
-                                            <input type="text" class="form-control" name="Name" id="Name" required>
+                                            @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+                                            @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
                                         </div>
                                     </div>
                                 </div>

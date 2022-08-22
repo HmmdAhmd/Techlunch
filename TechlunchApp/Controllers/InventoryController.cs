@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -11,6 +12,8 @@ namespace TechlunchApp.Controllers
 {
     public class InventoryController : Controller
     {
+        private static List<IngredientViewModel> Ingredients = new List<IngredientViewModel>();
+
         public async Task<IActionResult> Index()
         {
             List<GeneralInventoryViewModel> inventoryList = new List<GeneralInventoryViewModel>();
@@ -28,8 +31,6 @@ namespace TechlunchApp.Controllers
         [HttpGet]
         public async Task<IActionResult> Create()
         {
-            List<IngredientViewModel> Ingredients = new List<IngredientViewModel>();
-
             using (var httpClient = new HttpClient())
             {
                 using (var IngredientsResponse = await httpClient.GetAsync($"{Constants.ApiUrl}Ingredients"))
@@ -40,19 +41,26 @@ namespace TechlunchApp.Controllers
                 }
             }
 
-            return View(Ingredients);
+            ViewBag.Ingredients = Ingredients;
+            return View();
         }
 
         [HttpPost]
         public async Task<IActionResult> Create(InventoryViewModel inventoryObj)
         {
-            using (var httpClient = new HttpClient())
+            if (ModelState.IsValid)
             {
-                StringContent content = new StringContent(JsonConvert.SerializeObject(inventoryObj), Encoding.UTF8, "application/json");
-                var response = await httpClient.PostAsync($"{Constants.ApiUrl}inventories", content);
+                using (var httpClient = new HttpClient())
+                {
+                    StringContent content = new StringContent(JsonConvert.SerializeObject(inventoryObj), Encoding.UTF8, "application/json");
+                    var response = await httpClient.PostAsync($"{Constants.ApiUrl}inventories", content);
 
+                }
+                return RedirectToAction("Index");
             }
-            return RedirectToAction("Index");
+
+            ViewBag.Ingredients = Ingredients;
+            return View(inventoryObj);
         }
 
         [HttpGet]

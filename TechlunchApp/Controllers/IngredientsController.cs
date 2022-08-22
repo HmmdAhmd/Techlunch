@@ -34,13 +34,18 @@ namespace TechlunchApp.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(IngredientViewModel ingredientObj)
         {
-            using (var httpClient = new HttpClient())
+            if (ModelState.IsValid)
             {
-                StringContent content = new StringContent(JsonConvert.SerializeObject(ingredientObj), Encoding.UTF8, "application/json");
-                var response = await httpClient.PostAsync($"{Constants.ApiUrl}ingredients", content);
+                using (var httpClient = new HttpClient())
+                {
+                    StringContent content = new StringContent(JsonConvert.SerializeObject(ingredientObj), Encoding.UTF8, "application/json");
+                    var response = await httpClient.PostAsync($"{Constants.ApiUrl}ingredients", content);
 
+                }
+                return RedirectToAction("Index");
             }
-            return RedirectToAction("Index");
+
+            return View(ingredientObj);
         }
 
         [HttpGet]
@@ -61,13 +66,18 @@ namespace TechlunchApp.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(IngredientViewModel ingredientObj)
         {
-            using (var httpClient = new HttpClient())
+            if (ModelState.IsValid)
             {
-                StringContent content = new StringContent(JsonConvert.SerializeObject(ingredientObj), Encoding.UTF8, "application/json");
-                var response = await httpClient.PutAsync($"{Constants.ApiUrl}ingredients/{ingredientObj.Id}", content);
+                using (var httpClient = new HttpClient())
+                {
+                    StringContent content = new StringContent(JsonConvert.SerializeObject(ingredientObj), Encoding.UTF8, "application/json");
+                    var response = await httpClient.PutAsync($"{Constants.ApiUrl}ingredients/{ingredientObj.Id}", content);
 
+                }
+                return RedirectToAction("Index");
             }
-            return RedirectToAction("Index");
+
+            return View(ingredientObj);
         }
 
         [HttpPost]

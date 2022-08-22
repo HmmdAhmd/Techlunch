@@ -42,13 +42,15 @@
                                     <div class="col-xxl-3 col-md-6">
                                         <div>
                                             <label for="Name" class="form-label">Name</label>
-                                            <input type="text" class="form-control" name="Name" id="Name" required>
+                                            @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+                                            @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
                                         </div>
                                     </div>
                                     <div class="col-xxl-3 col-md-6">
                                         <div>
                                             <label for="Price" class="form-label">Price</label>
-                                            <input type="number" class="form-control" name="Price" id="Price" required>
+                                            @Html.EditorFor(model => model.Price, new { htmlAttributes = new { @type = "number", @class = "form-control" } })
+                                            @Html.ValidationMessageFor(model => model.Price, "", new { @class = "text-danger" })
                                         </div>
                                     </div>
                                 </div>

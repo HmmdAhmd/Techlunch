@@ -36,13 +36,18 @@ namespace TechlunchApp.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(FoodItemViewModel FoodItemObj)
         {
-            using (var httpClient = new HttpClient())
+            if (ModelState.IsValid)
             {
-                StringContent content = new StringContent(JsonConvert.SerializeObject(FoodItemObj), Encoding.UTF8, "application/json");
-                var response = await httpClient.PostAsync($"{Constants.ApiUrl}fooditems", content);
+                using (var httpClient = new HttpClient())
+                {
+                    StringContent content = new StringContent(JsonConvert.SerializeObject(FoodItemObj), Encoding.UTF8, "application/json");
+                    var response = await httpClient.PostAsync($"{Constants.ApiUrl}fooditems", content);
 
+                }
+                return RedirectToAction("Index");
             }
-            return RedirectToAction("Index");
+
+            return View(FoodItemObj);
         }
 
         [HttpPost]

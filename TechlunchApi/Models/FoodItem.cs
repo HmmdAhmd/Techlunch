@@ -13,9 +13,11 @@ namespace TechlunchApi.Models
         public int Id { get; set; }
 
         [Required]
+        [StringLength(100)]
         public string Name { get; set; }
 
         [Required]
+        [Range(1, float.MaxValue)]
         public float Price { get; set; }
 
         public Boolean Status { get; set; }

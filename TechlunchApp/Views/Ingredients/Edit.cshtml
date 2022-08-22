@@ -46,7 +46,8 @@
                                             <input type="text" class="form-control" name="Id" id="Id" hidden value="@Model.Id" >
 
                                             <label for="Name" class="form-label">Name</label>
-                                            <input type="text" class="form-control" name="Name" id="Name" value="@Model.Name" required>
+                                            @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+                                            @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
                                         </div>
                                     </div>
                                 </div>
