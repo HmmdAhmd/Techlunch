@@ -10,7 +10,7 @@ using TechlunchApi.Data;
 namespace TechlunchApi.Migrations
 {
     [DbContext(typeof(TechlunchDbContext))]
-    [Migration("20220822085435_InitialCreate")]
+    [Migration("20220823171148_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -54,7 +54,8 @@ namespace TechlunchApi.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
 
                     b.Property<float>("Price")
                         .HasColumnType("real");
@@ -124,7 +125,8 @@ namespace TechlunchApi.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
 
                     b.Property<bool>("Status")
                         .HasColumnType("bit");
@@ -191,7 +193,7 @@ namespace TechlunchApi.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<float>("EstimatedPrice")
+                    b.Property<float>("EstimatedCost")
                         .HasColumnType("real");
 
                     b.Property<int>("FoodItemId")

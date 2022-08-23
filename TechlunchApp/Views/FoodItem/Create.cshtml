@@ -41,15 +41,15 @@
                                 <div class="row gy-4 mb-2">
                                     <div class="col-xxl-3 col-md-6">
                                         <div>
-                                            <label for="Name" class="form-label">Name</label>
-                                            @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+                                            @Html.LabelFor(model => model.Name, "Name", new { htmlAttributes = new { @class = "form-control" } })
+                                            @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control", @autofocus="true" } })
                                             @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
                                         </div>
                                     </div>
                                     <div class="col-xxl-3 col-md-6">
                                         <div>
-                                            <label for="Price" class="form-label">Price</label>
-                                            @Html.EditorFor(model => model.Price, new { htmlAttributes = new { @type = "number", @class = "form-control" } })
+                                            @Html.LabelFor(model => model.Price, "Price", new { htmlAttributes = new { @class = "form-control" } })
+                                            @Html.EditorFor(model => model.Price, new { htmlAttributes = new { @type = "number", @step="0.01", @class = "form-control" } })
                                             @Html.ValidationMessageFor(model => model.Price, "", new { @class = "text-danger" })
                                         </div>
                                     </div>

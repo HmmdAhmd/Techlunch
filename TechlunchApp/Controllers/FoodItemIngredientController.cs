@@ -12,11 +12,14 @@ namespace TechlunchApp.Controllers
 {
     public class FoodItemIngredientController : Controller
     {
+
+        private static List<FoodItemIngredientViewModel> FoodItemIngredients = new List<FoodItemIngredientViewModel>();
+        private static List<IngredientViewModel> Ingredients = new List<IngredientViewModel>();
+        private static FoodItemViewModel FoodItem = new FoodItemViewModel();
+
         public async Task<IActionResult> Create(int id)
         {
-            List<FoodItemIngredientViewModel> FoodItemIngredients = new List<FoodItemIngredientViewModel>();
-            List<IngredientViewModel> Ingredients = new List<IngredientViewModel>();
-            FoodItemViewModel FoodItem = new FoodItemViewModel();
+            
             using (var httpClient = new HttpClient())
             {
                 using (var response = await httpClient.GetAsync($"{Constants.ApiUrl}fooditemingredients/{id}"))
@@ -35,23 +38,29 @@ namespace TechlunchApp.Controllers
                     FoodItem = JsonConvert.DeserializeObject<FoodItemViewModel>(FooddItemApiResponse);
                 }
             }
-            dynamic Context = new ExpandoObject();
-            Context.FoodItem = FoodItem;
-            Context.Ingredients = Ingredients;
-            Context.FoodItemIngredients = FoodItemIngredients;
-            return View("Index", Context);
+            ViewBag.FoodItem = FoodItem;
+            ViewBag.Ingredients = Ingredients;
+            ViewBag.FoodItemIngredients = FoodItemIngredients;
+            return View("Index");
         }
         [HttpPost]
         public async Task<IActionResult> Create(FoodItemIngredientViewModel FoodItemIngredientObj)
         {
-            FoodItemIngredientViewModel NewFoodItem = new FoodItemIngredientViewModel();
-            using (var httpClient = new HttpClient())
+            if (ModelState.IsValid)
             {
-                StringContent content = new StringContent(JsonConvert.SerializeObject(FoodItemIngredientObj), Encoding.UTF8, "application/json");
-                var response = await httpClient.PostAsync($"{Constants.ApiUrl}FoodItemIngredients", content);
-                string FooddItemApiResponse = await response.Content.ReadAsStringAsync();
+                using (var httpClient = new HttpClient())
+                {
+                    StringContent content = new StringContent(JsonConvert.SerializeObject(FoodItemIngredientObj), Encoding.UTF8, "application/json");
+                    var response = await httpClient.PostAsync($"{Constants.ApiUrl}FoodItemIngredients", content);
+                    string FooddItemApiResponse = await response.Content.ReadAsStringAsync();
+                }
+                return RedirectToAction("Create");
             }
-            return RedirectToAction("Create");
+
+            ViewBag.FoodItem = FoodItem;
+            ViewBag.Ingredients = Ingredients;
+            ViewBag.FoodItemIngredients = FoodItemIngredients;
+            return View("Index", FoodItemIngredientObj);
         }
         [HttpPost]
         public async Task<IActionResult> Delete(int ItemId, int FoodItemId)
