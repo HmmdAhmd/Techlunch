@@ -5,11 +5,11 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OpenIddict.Abstractions;
 using OpenIddict.Server.AspNetCore;
+using OpenIddict.Validation.AspNetCore;
 
 namespace TechlunchApi.Controllers
 {
@@ -72,13 +72,13 @@ namespace TechlunchApi.Controllers
                 throw new InvalidOperationException("The OpenID Connect request cannot be retrieved.");
 
             // Retrieve the user principal stored in the authentication cookie.
-            var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            var result = await HttpContext.AuthenticateAsync(OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme);
 
             // If the user principal can't be extracted, redirect the user to the login page.
             if (!result.Succeeded)
             {
                 return Challenge(
-                    authenticationSchemes: CookieAuthenticationDefaults.AuthenticationScheme,
+                    authenticationSchemes: OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme,
                     properties: new AuthenticationProperties
                     {
                         RedirectUri = Request.PathBase + Request.Path + QueryString.Create(

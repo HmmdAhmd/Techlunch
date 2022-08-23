@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using OpenIddict.Abstractions;
+using TechlunchApi.Data;
 
 namespace TechlunchApi
 {
@@ -21,7 +22,7 @@ namespace TechlunchApi
         {
             using var scope = _serviceProvider.CreateScope();
 
-            var context = scope.ServiceProvider.GetRequiredService<DbContext>();
+            var context = scope.ServiceProvider.GetRequiredService<TechlunchDbContext>();
             await context.Database.EnsureCreatedAsync(cancellationToken);
 
             var manager = scope.ServiceProvider.GetRequiredService<IOpenIddictApplicationManager>();
@@ -30,7 +31,7 @@ namespace TechlunchApi
             {
                 await manager.CreateAsync(new OpenIddictApplicationDescriptor
                 {
-                    ClientId = "posman",
+                    ClientId = "postman",
                     ClientSecret = "postman-secret",
                     DisplayName = "Postman",
                     RedirectUris = { new Uri("https://oauth.pstmn.io/v1/callback") },

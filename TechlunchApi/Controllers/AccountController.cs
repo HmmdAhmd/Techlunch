@@ -1,34 +1,30 @@
 ﻿using System.Collections.Generic;
 using System.Security.Claims;
+using System.Linq;
 using System.Threading.Tasks;
 using TechlunchApi.ViewModels;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using TechlunchApi.Controllers;
-using Microsoft.AspNetCore.Identity;
+using TechlunchApi.Data;
+using OpenIddict.Validation.AspNetCore;
 
 namespace TechlunchApi.Controllers
 {
     public class AccountController : Controller
     {
-
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly SignInManager<IdentityUser> _signInManager;
-
-        public AccountController(UserManager<IdentityUser> userManager,
-                                      SignInManager<IdentityUser> signInManager)
+        private readonly TechlunchDbContext _context;
+        public AccountController(TechlunchDbContext context)
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
+            _context = context;
         }
+
 
         [HttpGet]
         [AllowAnonymous]
         public IActionResult Login(string returnUrl = null)
         {
-            ViewData["ReturnUrl"] = "https://oauth.pstmn.io/v1/callback";
+            ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
 
@@ -41,21 +37,15 @@ namespace TechlunchApi.Controllers
 
             if (ModelState.IsValid)
             {
-
-                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
-
-                if (result.Succeeded)
+                var q = _context.Users.Where(x => x.UserName==model.Username).ToList();
+                if (q.Count!=0)
                 {
-
-
-
-
                     var claims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.Email, model.Email)
-                };
+                    {
+                     new Claim(ClaimTypes.Name, model.Username)
+                    };
 
-                    var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                    var claimsIdentity = new ClaimsIdentity(claims, OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme);
 
                     await HttpContext.SignInAsync(new ClaimsPrincipal(claimsIdentity));
 
@@ -66,55 +56,16 @@ namespace TechlunchApi.Controllers
 
                     return RedirectToAction(nameof(HomeController.Index), "Home");
                 }
-
-                return View(model);
             }
-            ModelState.AddModelError(string.Empty, "Invalid Login Attempt");
+
             return View(model);
         }
-
-      
 
         public async Task<IActionResult> Logout()
         {
-            await _signInManager.SignOutAsync();
+            await HttpContext.SignOutAsync();
 
-            return RedirectToAction("Login");
-        }
-        public IActionResult Register()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Register(RegisterViewModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                var user = new IdentityUser
-                {
-                    UserName = model.Email,
-                    Email = model.Email,
-                };
-
-                var result = await _userManager.CreateAsync(user, model.Password);
-
-                if (result.Succeeded)
-                {
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-
-                    return RedirectToAction("index", "Home");
-                }
-
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError("", error.Description);
-                }
-
-                ModelState.AddModelError(string.Empty, "Invalid Login Attempt");
-
-            }
-            return View(model);
+            return RedirectToAction(nameof(HomeController.Index), "Home");
         }
     }
 }

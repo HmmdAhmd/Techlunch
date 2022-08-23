@@ -13,8 +13,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TechlunchApi.Data;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
+using AspNet.Security.OAuth.Validation;
+using AspNet.Security.OpenIdConnect.Server;
+using OpenIddict.Validation.AspNetCore;
 
 namespace TechlunchApi
 {
@@ -30,25 +32,41 @@ namespace TechlunchApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddControllersWithViews();
+
             services.AddDbContext<TechlunchDbContext>(options =>
-            options.UseSqlServer(Configuration.GetConnectionString("DBConnection")));
-            services.AddControllers();
-            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-            .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
-            {
-                options.LoginPath = "/account/login";
-            });
-            services.AddMvc();
+                {
+                    options.UseSqlServer(Configuration.GetConnectionString("DBConnection"));
+                    options.UseOpenIddict();
+                });
+            services.AddIdentity<IdentityUser, IdentityRole>()
+                    .AddEntityFrameworkStores<TechlunchDbContext>()
+                    .AddDefaultTokenProviders();
+            services.AddScoped<DbContext, TechlunchDbContext>();
+
+            services.AddAuthentication(o =>
+                {
+                    o.DefaultScheme = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
+                    o.DefaultAuthenticateScheme = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
+                    o.DefaultChallengeScheme = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
+                });
 
 
-            services.AddDbContext<DbContext>(options =>
-            {
-                // Configure the context to use an in-memory store.
-                options.UseInMemoryDatabase(nameof(DbContext));
+            //services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+            //.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+            //{
+            //    options.LoginPath = "/account/login";
+            //});
 
-                // Register the entity sets needed by OpenIddict.
-                options.UseOpenIddict();
-            });
+
+                //services.AddDbContext<DbContext>(options =>
+                //{
+                //    // Configure the context to use an in-memory store.
+                //    options.UseInMemoryDatabase(nameof(DbContext));
+
+                //    // Register the entity sets needed by OpenIddict.
+                //    options.UseOpenIddict();
+                //});
 
             services.AddOpenIddict()
 
@@ -57,7 +75,7 @@ namespace TechlunchApi
                 {
                     // Configure OpenIddict to use the EF Core stores/models.
                     options.UseEntityFrameworkCore()
-                        .UseDbContext<DbContext>();
+                        .UseDbContext<TechlunchDbContext>();
                 })
 
                 // Register the OpenIddict server components.
@@ -69,8 +87,6 @@ namespace TechlunchApi
                         .AllowClientCredentialsFlow()
                         .AllowRefreshTokenFlow();
 
-                    options
-                        .AllowClientCredentialsFlow();
 
                     options
                         .SetAuthorizationEndpointUris("/connect/authorize")
@@ -79,9 +95,11 @@ namespace TechlunchApi
 
                     // Encryption and signing of tokens
                     options
-                        .AddEphemeralEncryptionKey()
-                        .AddEphemeralSigningKey()
-                        .DisableAccessTokenEncryption();
+                    .AddDevelopmentEncryptionCertificate()
+                    .AddDevelopmentSigningCertificate();
+                    //    .AddEphemeralEncryptionKey()
+                    //    .AddEphemeralSigningKey()
+                    //    .DisableAccessTokenEncryption();
 
                     // Register scopes (permissions)
                     options.RegisterScopes("api");
@@ -94,10 +112,12 @@ namespace TechlunchApi
                         .EnableUserinfoEndpointPassthrough();
 
                 });
-            services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<TechlunchDbContext>();
+                            
             services.AddHostedService<Worker>();
         }
 
+       
+        
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
