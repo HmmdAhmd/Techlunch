@@ -1,72 +1,84 @@
-﻿@model FoodItemViewModel
+﻿@model GenerateReportViewModel
 @{
-     ViewData["Title"] = "Generate Report";
+    ViewData["Title"] = "Generate Report";
 }
 
-            <div class="main-content">
-                <div class="page-content">
-                    <div class="container-fluid">
-                        <!-- start page title -->
-                        <div class="row">
-                            <div class="col-12">
-                                <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                                    <h4 class="mb-sm-0">Add Food Item</h4>
+<div class="main-content">
+    <div class="page-content">
+        <div class="container-fluid">
+            <!-- start page title -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                        <h4 class="mb-sm-0">Generate Report</h4>
 
-                                    <div class="page-title-right">
-                                        <ol class="breadcrumb m-0">
-                                            <li class="breadcrumb-item"><a href="javascript: void(0);">Food Items</a></li>
-                                            <li class="breadcrumb-item active">Create</li>
-                                        </ol>
-                                    </div>
-
-                                </div>
-                            </div>
+                        <div class="page-title-right">
+                            <ol class="breadcrumb m-0">
+                                <li class="breadcrumb-item"><a href="javascript: void(0);">Reports</a></li>
+                                <li class="breadcrumb-item active">Generate</li>
+                            </ol>
                         </div>
-                        <!-- end page title -->
 
-                        <div class="row">
-                            <div class="col-12">
-                                <div class="card">
-                                    <div class="card-header align-items-center d-flex">
-                                        <h4 class="card-title mb-0 flex-grow-1">Report</h4>
-                                    </div><!-- end card header -->
-
-                                    <div class="card-body">
-                                        <form asp-action="GenerateReport" asp-controller="Report" method="post" onsubmit="return ValidateTime()">
-                                        <div class="row gy-4 mb-2">
-                                        <div class="col-xxl-3 col-md-6">
-                                                <div>
-                                                    <label for="StartingTime" class="form-label">Starting Time</label>
-                                                    <input type="datetime-local" class="form-control" name="StartingTime" id="StartingTime" required>
-                                                </div>
-                                         </div>
-                                         <div class="col-xxl-3 col-md-6">
-                                                <div>
-                                                    <label for="EndingTime" class="form-label">Ending Time</label>
-                                                    <input type="datetime-local" class="form-control" name="EndingTime" id="EndingTime" required>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <p id="TimeError" style="color:red; margin-bottom:0px; display:none;">Starting time should be before ending time</p>
-                                        <button class="btn btn-primary mt-2" type="submit">Generate Report</button>
-                                        </form>
-                                     </div>
-
-                                     
-                                 </div>
-                            </div>
-                         </div>
                     </div>
                 </div>
-             </div>
-             <script>
-                 function ValidateTime(){
-                     var StartingTime = document.getElementById("StartingTime").value;
-                     var EndingTime = document.getElementById("EndingTime").value;
-                     if (StartingTime > EndingTime) {
-                         document.getElementById("TimeError").style.display="block";
-                         return false;
-                     }
-                     return true;
-                 }
-             </script>
+            </div>
+            <!-- end page title -->
+
+            @if (ViewBag.Message == true)
+            {
+                <!-- Alert -->
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <strong>Starting time should be before ending time</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header align-items-center d-flex">
+                            <h4 class="card-title mb-0 flex-grow-1">Report</h4>
+                        </div><!-- end card header -->
+
+                        <div class="card-body">
+                            <form asp-action="GenerateReport" asp-controller="Report" method="post" onsubmit="return ValidateTime()">
+                                <div class="row gy-4 mb-2">
+                                    <div class="col-xxl-3 col-md-6">
+                                        <div>
+                                            @Html.LabelFor(model => model.StartingTime, "Starting Time", new { htmlAttributes = new { @class = "form-control" } })
+                                            @Html.EditorFor(model => model.StartingTime, new { htmlAttributes = new { @type = "datetime-local", @class = "form-control" } })
+                                            @Html.ValidationMessageFor(model => model.StartingTime, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                    <div class="col-xxl-3 col-md-6">
+                                        <div>
+                                            @Html.LabelFor(model => model.EndingTime, "Ending Time", new { htmlAttributes = new { @class = "form-control" } })
+                                            @Html.EditorFor(model => model.EndingTime, new { htmlAttributes = new { @type = "datetime-local", @class = "form-control" } })
+                                            @Html.ValidationMessageFor(model => model.EndingTime, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+                                @*<p id="TimeError" style="color:red; margin-bottom:0px; display:none;">Starting time should be before ending time</p>*@
+                                <button class="btn btn-primary mt-2" type="submit">Generate Report</button>
+                            </form>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*<script>
+    function ValidateTime() {
+        var StartingTime = document.getElementById("StartingTime").value;
+        var EndingTime = document.getElementById("EndingTime").value;
+        if (StartingTime > EndingTime) {
+            document.getElementById("TimeError").style.display = "block";
+            return false;
+        }
+        return true;
+    }
+</script>*@
