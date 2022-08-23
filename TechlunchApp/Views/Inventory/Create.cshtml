@@ -41,9 +41,9 @@
                                 <div class="row gy-4 mb-2">
                                     <div class="col-xxl-3 col-md-6">
                                         <div>
-                                            <label for="Name" class="form-label">Ingredient</label>
-                                            <select class="form-select mb-3" name="IngredientId">
-                                                <option selected value="0">Select Ingredient</option>
+                                            @Html.LabelFor(model => model.IngredientId, "Ingredient", new { htmlAttributes = new { @type="number", @class = "form-control" } })
+                                            <select class="form-select" name="IngredientId">
+                                                <option selected value="">Select Ingredient</option>
                                                 @foreach (IngredientViewModel ingredient in ViewBag.Ingredients)
                                                 {
                                                     <option value="@ingredient.Id">@ingredient.Name</option>
@@ -51,28 +51,25 @@
 
                                             </select>
                                             @Html.ValidationMessageFor(model => model.IngredientId, "", new { @class = "text-danger" })
-                                            @*@Html.DropDownListFor(model => model.IngredientId, (IEnumerable<SelectListItem>)ViewBag.Ingredients, new { htmlAttributes = new { @class = "form-control form-select mb-3" } })
-                                            @Html.ValidationMessageFor(model => model.IngredientId, "", new { @class = "text-danger" })*@
                                         </div>
                                     </div>
                                     <div class="col-xxl-3 col-md-6">
                                         <div>
-                                            <label for="Quantity" class="form-label">Quantity</label>
-                                            @Html.EditorFor(model => model.Quantity, new { htmlAttributes = new { @type="number", @class = "form-control" } })
+                                            @Html.LabelFor(model => model.Quantity, new { htmlAttributes = new { @class = "form-control" } })
+                                            @Html.EditorFor(model => model.Quantity, new { htmlAttributes = new { @type = "number", @class = "form-control" } })
                                             @Html.ValidationMessageFor(model => model.Quantity, "", new { @class = "text-danger" })
                                         </div>
                                     </div>
                                     <div class="col-xxl-3 col-md-6">
                                         <div>
-                                            <label for="Price" class="form-label">Price</label>
+                                            @Html.LabelFor(model => model.Price, new { htmlAttributes = new { @class = "form-control" } })
                                             @Html.EditorFor(model => model.Price, new { htmlAttributes = new { @type="number", @class = "form-control" } })
                                             @Html.ValidationMessageFor(model => model.Price, "", new { @class = "text-danger" })
                                         </div>
                                     </div>
                                     <div class="col-xxl-3 col-md-6">
                                         <div>
-                                            <label for="AddedOn" class="form-label">Added</label>
-                                            @*<input type="datetime-local" class="form-control" name="AddedOn" id="AddedOn" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" required>*@
+                                            @Html.LabelFor(model => model.AddedOn, "Added", new { htmlAttributes = new { @class = "form-control" } })
                                             @Html.EditorFor(model => model.AddedOn, new { htmlAttributes = new { @type="datetime-local", @class = "form-control" } })
                                             @Html.ValidationMessageFor(model => model.AddedOn, "", new { @class = "text-danger" })
                                         </div>
