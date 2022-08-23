@@ -43,6 +43,20 @@ namespace TechlunchApi.Controllers
             return Ok(generalInventory);
         }
 
+        // GET: api/GeneralInventories/5
+        [HttpGet("IngredientId/{id}")]
+        public async Task<ActionResult<GeneralInventory>> GetGeneralInventoryObj(int id)
+        {
+            var generalInventory = await _context.GeneralInventory.SingleOrDefaultAsync(g => g.IngredientId == id);
+
+            if (generalInventory == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(generalInventory);
+        }
+
         // GET: api/GeneralInventories/Ingredient/5
         [HttpGet("Ingredient/{id}")]
         public async Task<ActionResult<IngredientHistory>> GetIngredientHistory(int id)
@@ -61,6 +75,41 @@ namespace TechlunchApi.Controllers
             }
 
             return Ok(ingredientHistory);
+        }
+
+        private bool GeneralInventoryExists(int id)
+        {
+            return _context.GeneralInventory.Any(e => e.Id == id);
+        }
+
+        // PUT: api/GeneralInventories/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutGeneralInventory(int id, GeneralInventory generalInventory)
+        {
+            if (id != generalInventory.Id)
+            {
+                return BadRequest();
+            }
+
+            _context.Entry(generalInventory).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!GeneralInventoryExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
         }
     }
 }

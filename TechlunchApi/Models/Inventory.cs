@@ -17,9 +17,11 @@ namespace TechlunchApi.Models
 
 
         [Required]
+        [Range(1, int.MaxValue)]
         public int Quantity { get; set; }
 
         [Required]
+        [Range(1, float.MaxValue)]
         public float Price { get; set; }
 
         [Required]
