@@ -13,5 +13,9 @@ namespace TechlunchApp.ViewModels
         [Required(ErrorMessage = "Please enter price")]
         public float Price { get; set; }
 
+        public int Quantity { get; set; }
+
+        public int AvailableQuantity { get; set; }
+
     }
 }
