@@ -48,12 +48,12 @@ namespace TechlunchApp.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> Register(RegisterViewModel ingredientObj)
+        public async Task<IActionResult> Register(RegisterViewModel registerObj)
         {
 
             using (var httpClient = new HttpClient())
             {
-                StringContent content = new StringContent(JsonConvert.SerializeObject(ingredientObj), Encoding.UTF8, "application/json");
+                StringContent content = new StringContent(JsonConvert.SerializeObject(registerObj), Encoding.UTF8, "application/json");
                 var response = await httpClient.PostAsync($"{Constants.ApiUrl}authenticate/register", content);
                 if (response.StatusCode == System.Net.HttpStatusCode.Conflict)
                 {
