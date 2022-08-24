@@ -39,10 +39,6 @@ namespace TechlunchApp.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(IngredientViewModel ingredientObj)
         {
-
-
-            using (var httpClient = new HttpClient())
-            {
             if (ModelState.IsValid)
             {
                 using (var httpClient = new HttpClient())
@@ -61,7 +57,8 @@ namespace TechlunchApp.Controllers
             }
 
             return View(ingredientObj);
-        }
+         }
+            
 
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
