@@ -8,6 +8,9 @@ namespace TechlunchApp.Controllers
     {
         public IActionResult Index()
         {
+            if (Request.Cookies["token"] != null) {
+                return Redirect("/dashboard");
+            }
             return View();
         }
 

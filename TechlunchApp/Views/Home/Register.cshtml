@@ -67,20 +67,14 @@
                             
                                 <div class="card-body p-4"> 
                                     <div class="text-center mt-2">
-                                        <h5 class="text-primary">Welcome Back !</h5>
-                                        <p class="text-muted">Sign in to continue to techlunch.</p>
+                                        <h5 class="text-primary">Welcome to the Techlunch !</h5>
+                                        <p class="text-muted">Register to continue to techlunch.</p>
                                     </div>
                                     <div class="p-2 mt-4">
-                                        <form method="post" asp-controller="authentication" asp-action="login">
+                                        <form method="post" asp-controller="authentication" asp-action="register">
                                         @if(TempData["ErrorMessage"]!=null){
                                             <div class="alert alert-danger" role="alert">
                                                 @TempData["ErrorMessage"]
-                                            </div>
-                                        }
-
-                                        @if(TempData["SuccessMessage"]!=null){
-                                            <div class="alert alert-success" role="alert">
-                                                @TempData["SuccessMessage"]
                                             </div>
                                         }
                                         
@@ -88,6 +82,11 @@
                                             <div class="mb-3">
                                                 <label for="username" class="form-label">Username</label>
                                                 <input type="text" class="form-control" id="username" name="username" placeholder="Enter username" required>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label for="email" class="form-label">Email</label>
+                                                <input type="email" class="form-control" id="email" name="email" placeholder="Enter Email" required>
                                             </div>
                     
                                             <div class="mb-3">
@@ -101,7 +100,7 @@
                                           
                                             
                                             <div class="mt-4">
-                                                <button class="btn btn-success w-100" type="submit">Sign In</button>
+                                                <button class="btn btn-success w-100" type="submit">Register</button>
                                             </div>
 
                                             
@@ -111,11 +110,9 @@
                                 <!-- end card body -->
                             </div>
                             <!-- end card -->
-
                             <div class="mt-4 text-center">
-                                <p class="mb-0">Don't have an account ? <a href="/register" class="fw-semibold text-primary text-decoration-underline"> Register </a> </p>
+                                <p class="mb-0">Already have an account ? <a href="/login" class="fw-semibold text-primary text-decoration-underline"> Login </a> </p>
                             </div>
-
 
                         </div>
                     </div>

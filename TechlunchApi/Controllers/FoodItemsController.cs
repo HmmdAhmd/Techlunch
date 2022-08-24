@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +14,7 @@ namespace TechlunchApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class FoodItemsController : ControllerBase
     {
         private readonly TechlunchDbContext _context;
@@ -22,6 +24,7 @@ namespace TechlunchApi.Controllers
         }
 
         // GET: api/FoodItems
+        
         [HttpGet]
         public async Task<ActionResult<IEnumerable<FoodItem>>> GetFoodItems()
         {
@@ -30,6 +33,7 @@ namespace TechlunchApi.Controllers
         }
 
         // GET: api/FoodItems/5
+        
         [HttpGet("{id}")]
         public async Task<ActionResult<FoodItem>> GetFoodItem(int id)
         {
@@ -44,6 +48,7 @@ namespace TechlunchApi.Controllers
 
 
         // POST: api/FoodItems
+        
         [HttpPost]
         public async Task<ActionResult<FoodItem>> PostFoodItem(FoodItem foodItem)
         {
@@ -54,6 +59,7 @@ namespace TechlunchApi.Controllers
         }
 
         // DELETE: api/FoodItems/5
+        
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteFoodItem(int id)
         {
