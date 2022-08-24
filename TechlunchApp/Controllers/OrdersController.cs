@@ -173,8 +173,8 @@ namespace TechlunchApp.Controllers
 
                 using (var httpClient = new HttpClient())
                 {
-                    orderDetail.Price = foodItem.Price * orderDetail.Quantity;
-                    orderDetail.EstimatedPrice = estPrice;
+                    orderDetail.Price = (float)(foodItem.Price * orderDetail.Quantity);
+                    orderDetail.EstimatedCost = estPrice;
                     price = orderDetail.Price;
 
                     StringContent content = new StringContent(JsonConvert.SerializeObject(orderDetail), Encoding.UTF8, "application/json"); ;
@@ -246,7 +246,7 @@ namespace TechlunchApp.Controllers
                         generalInventoryObj = JsonConvert.DeserializeObject<GeneralInventoryViewModel>(apiResponse);
                     }
 
-                    int Quantity = quantity * ingredients[i].Quantity;
+                    int Quantity = (int)(quantity * ingredients[i].Quantity);
                     if (generalInventoryObj == null || generalInventoryObj.AvailableQuantity < Quantity)
                     {
                         return 0;

@@ -40,8 +40,13 @@ namespace TechlunchApp.Controllers
         public async Task<IActionResult> Create(IngredientViewModel ingredientObj)
         {
 
+
             using (var httpClient = new HttpClient())
             {
+            if (ModelState.IsValid)
+            {
+                using (var httpClient = new HttpClient())
+                {
                 httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
                 StringContent content = new StringContent(JsonConvert.SerializeObject(ingredientObj), Encoding.UTF8, "application/json");
                 var response = await httpClient.PostAsync($"{Constants.ApiUrl}ingredients", content);
@@ -50,8 +55,12 @@ namespace TechlunchApp.Controllers
                     return Redirect("/logout");
                 }
 
+
+                }
+                return RedirectToAction("Index");
             }
-            return RedirectToAction("Index");
+
+            return View(ingredientObj);
         }
 
         [HttpGet]
@@ -77,9 +86,12 @@ namespace TechlunchApp.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(IngredientViewModel ingredientObj)
         {
-            using (var httpClient = new HttpClient())
+            if (ModelState.IsValid)
             {
-                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
+
+                using (var httpClient = new HttpClient())
+                {
+                     httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
                 StringContent content = new StringContent(JsonConvert.SerializeObject(ingredientObj), Encoding.UTF8, "application/json");
                 var response = await httpClient.PutAsync($"{Constants.ApiUrl}ingredients/{ingredientObj.Id}", content);
                 if (!ApiAuthorization.IsAuthorized(response))
@@ -87,8 +99,12 @@ namespace TechlunchApp.Controllers
                     return Redirect("/logout");
                 }
 
+
+                }
+                return RedirectToAction("Index");
             }
-            return RedirectToAction("Index");
+
+            return View(ingredientObj);
         }
 
         [HttpPost]

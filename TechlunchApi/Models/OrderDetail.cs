@@ -30,7 +30,7 @@ namespace TechlunchApi.Models
         public float Price { get; set; }
 
         [Required]
-        public float EstimatedPrice { get; set; }
+        public float EstimatedCost { get; set; }
 
 
     }

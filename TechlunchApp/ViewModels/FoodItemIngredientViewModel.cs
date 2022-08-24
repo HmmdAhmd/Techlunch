@@ -10,10 +10,11 @@ namespace TechlunchApp.ViewModels
         public int FoodItemId { get; set; }
 
         [Required(ErrorMessage = "Please select ingredient")]
-        public int IngredientId { get; set; }
+        public int? IngredientId { get; set; }
 
         [Required(ErrorMessage = "Please enter quantity")]
-        public int Quantity { get; set; }
+        [Range(1, int.MaxValue, ErrorMessage = "Quantity must be greater than 0")]
+        public int? Quantity { get; set; }
 
         [ForeignKey("IngredientId")]
         public IngredientViewModel IngredientFK { get; set; }
