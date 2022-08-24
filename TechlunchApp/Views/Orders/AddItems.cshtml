@@ -1,9 +1,19 @@
 ﻿@model dynamic
 @{
     ViewData["Title"] = "Order - Add Food Items";
-    int i = 1;
+    int i = 0;
     int price = 0;
 }
+
+<script>
+    function fun() {
+        alert();
+        var x = document.getElementById("cart-total");
+        x.innerText = "5 PKR";
+        var y = document.getElementById("xoxo");
+        y.innerHTML = '<th>Total</th><td class="text - end"><span class="fw - semibold">0 PKR</span></td>' + y.innerHTML;
+    };
+</script>
 
 <div class="main-content">
     <div class="page-content">
@@ -23,18 +33,6 @@
 
                     </div>
                 </div>
-            </div>
-            <!-- end page title -->
-            @if (ViewData["message"].ToString() != String.Empty)
-            {
-                <!-- Alert -->
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <strong>@ViewData["message"]</strong>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            }
-
-            <div class="row">
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header align-items-center d-flex">
@@ -44,110 +42,131 @@
                                     <a class="btn btn-warning" href="/orders">Go Back</a>
                                 </div>
                             </div>
-                        </div><!-- end card header -->
-
-                        <div class="card-header">
-                            <div class="row gy-4 mb-2">
-                                <div class="col-xxl-3 col-md-6">
-                                    <label>Price: </label>
-                                    <span>@Model.Order.TotalPrice</span>
-                                </div>
-                                <div class="col-xxl-3 col-md-6">
-                                    <label>Created: </label>
-                                    <span>@Model.Order.CreatedAt</span>
-                                </div>
-                            </div>
                         </div>
-
-                        <div class="card-body">
-                            <form asp-controller="Orders" asp-action="AddItems" method="post">
-                                <div class="row gy-4 mb-2">
-                                    <div class="col-xxl-3 col-md-6">
-                                        <input type="hidden" name="Id" value="" />
-                                        <input type="hidden" id="OrderId" name="OrderId" value="@Model.Order.Id" />
-                                        <div>
-                                            <label for="FoodItemId" class="form-label">Food Item</label>
-                                            <select class="form-select mb-3" name="FoodItemId" required>
-                                                <option selected value="">Select Food Item</option>
-                                                @foreach (FoodItemViewModel foodItem in Model.FoodItems)
-                                                {
-                                                    <option value="@foodItem.Id">@foodItem.Name</option>
-                                                }
-                                            </select>
-                                        </div>
-
-                                    </div>
-                                    <div class="col-xxl-3 col-md-6">
-                                        <div>
-                                            <label for="Quantity" class="form-label">Quantity</label>
-                                            <input type="number" class="form-control" name="Quantity" id="Quantity" required>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <input hidden type="number" class="form-control" name="Price" id="Price" value="@price" required>
-
-                                <input hidden type="number" class="form-control" name="EstimatedPrice" id="EstimatedPrice" value="@price" required>
-
-                                <button class="btn btn-primary mt-2">Save</button>
-                            </form>
-                        </div>
-
-
                     </div>
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-header align-items-center d-flex">
-                            <h4 class="card-title mb-0 flex-grow-1">Food Items</h4>
-                        </div><!-- end card header -->
+            <div class="row mb-3">
+                <div class="col-xl-8">
+                    <div class="row align-items-center gy-3 mb-3">
+                        <div class="col-sm">
+                            <div>
+                                <h5 class="fs-14 mb-0">Food Items</h5>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        @foreach (FoodItemViewModel foodItem in Model.FoodItems)
+                        {
 
-                        <div class="card-body">
+                            <div class="card product col-xxl-5" style="margin-right:20px">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-sm">
+                                            <h5 class="text-truncate">
+                                                <span class="text-dark">@foodItem.Name</span>
+                                            </h5>
+                                            <form asp-action="AddOrderDetail" method="post">
 
-                            <div class="live-preview">
+                                                <input type="hidden" value="@foodItem.Id" id="FoodItemId" name="FoodItemId">
+                                                <input type="hidden" value="@Model.Order.Id" id="OrderId" name="OrderId">
+                                                <input type="hidden" value="@foodItem.Price" id="Price" name="Price">
+
+                                                <div class="input-step">
+                                                    @if (@foodItem.Quantity < 1)
+                                                    {
+                                                        <button disabled type="submit" class="minus">–</button>
+                                                    }
+                                                    else
+                                                    {
+                                                        <button type="submit" class="minus">–</button>
+                                                    }
+
+                                                    <input type="number" class="product-quantity" value="@foodItem.Quantity" min="0" max="@foodItem.AvailableQuantity" id="Quantity" name="Quantity">
+                                                    @*<button type="submit" class="plus">+</button>*@
+                                                    @if (@foodItem.Quantity >= @foodItem.AvailableQuantity)
+                                                    {
+                                                        <button disabled type="submit" class="plus">+</button>
+                                                    }
+                                                    else
+                                                    {
+                                                        <button type="submit" class="plus">+</button>
+                                                    }
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <div class="col-sm-auto">
+                                            <div class="text-lg-end">
+                                                <p class="text-muted mb-1">Item Price:</p>
+                                                <h5 class="fs-14">
+                                                    $<span id="ticket_price"
+                                                       class="product-price">@foodItem.Price</span>
+                                                </h5>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            i++;
+                        }
+                    </div>
+                </div>
+
+                <div class="col-xl-4">
+
+                    <div class="sticky-side-div">
+                        <div class="card">
+                            <div class="card-header border-bottom-dashed">
+                                <h5 class="card-title mb-0">Order Summary</h5>
+                            </div>
+                            <div class="card-header bg-soft-light border-bottom-dashed">
+                                <div class="row mb-2">
+                                    <div class="col-sm">
+                                        <h6>Created</h6>
+                                    </div>
+                                    <div class="col-sm-auto">
+                                        <h6>@Model.Order.CreatedAt.ToString("dd/MM/yyyy hh:mm tt")</h6>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body pt-2">
                                 <div class="table-responsive">
-                                    <table class="table align-middle table-nowrap mb-0">
-                                        <thead>
-                                            <tr>
-                                                <th scope="col">No.</th>
-                                                <th scope="col">Food Item</th>
-                                                <th scope="col">Quantity</th>
-                                                <th scope="col">Price</th>
-                                                <th scope="col"></th>
-                                            </tr>
-                                        </thead>
+                                    <table class="table table-borderless mb-0">
                                         <tbody>
-                                            @foreach (OrderDetailsViewModel orderDetail in Model.OrderDetails)
+                                            @for (i = 0; i < Model.OrderDetails.Count; i++)
                                             {
                                                 <tr>
-                                                    <th scope="row">@i</th>
-                                                    <td>@orderDetail.FoodItemFK.Name</td>
-                                                    <td>@orderDetail.Quantity</td>
-                                                    <td>@orderDetail.Price</td>
                                                     <td>
-                                                        <form asp-controller="OrderDetails" asp-action="Delete" method="post">
-                                                            
-                                                            <input type="hidden" value="@orderDetail.FoodItemId" name="foodItemId" />
-
-                                                            <input type="hidden" value="@orderDetail.Id" name="id" />
-                                                            <input type="submit" class="link-danger delete-btn" value="Delete" />
-                                                        </form>
+                                                        @Model.OrderDetails[i].FoodItemFK.Name
+                                                        <span>(x</span>@Model.OrderDetails[i].Quantity)
                                                     </td>
+                                                    <td class="text-end" id="">@Model.OrderDetails[i].Price PKR</td>
                                                 </tr>
-                                                i++;
+                                                @*}*@
                                             }
+
+                                            <tr class="table-active">
+                                                <th>Total</th>
+                                                <td class="text-end">
+                                                    <span class="fw-semibold" id="cart-total">
+                                                        @Model.Order.TotalPrice PKR
+                                                    </span>
+                                                </td>
+                                            </tr>
                                         </tbody>
                                     </table>
                                 </div>
                             </div>
-
-
                         </div>
-                    </div><!-- end card-body -->
-                </div><!-- end card -->
+                        <form asp-action="Confirm" method="post">
+                            <input type="hidden" value="@Model.Order.Id" name="id" />
+                            <input type="submit" class="btn btn-primary w-100" value="Confirm Order" />
+                        </form>
+                    </div>
+
+                </div>
+
             </div>
 
         </div>

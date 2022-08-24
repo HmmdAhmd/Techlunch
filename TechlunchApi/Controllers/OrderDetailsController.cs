@@ -41,6 +41,41 @@ namespace TechlunchApi.Controllers
             return Ok(orderDetail);
         }
 
+        private bool OrderDetailExists(int id)
+        {
+            return _context.OrderDetail.Any(e => e.Id == id);
+        }
+
+        // PUT: api/OrderDetails/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutOrder(int id, OrderDetail orderDetail)
+        {
+            if (id != orderDetail.Id)
+            {
+                return BadRequest();
+            }
+
+            _context.Entry(orderDetail).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!OrderDetailExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
+        }
+
         // GET: api/OrderDetails/Order/5
         [HttpGet("Order/{id}")]
         public async Task<ActionResult<IEnumerable<OrderDetail>>> GetOrderDetails(int id)

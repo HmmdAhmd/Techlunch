@@ -16,5 +16,9 @@ namespace TechlunchApp.ViewModels
         [Range(1, float.MaxValue, ErrorMessage = "Price must be greater than or equal to 1")]
         public float? Price { get; set; }
 
+        public int Quantity { get; set; }
+
+        public int AvailableQuantity { get; set; }
+
     }
 }

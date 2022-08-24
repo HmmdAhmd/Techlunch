@@ -19,6 +19,13 @@ namespace TechlunchApi.Controllers
             _context = context;
         }
 
+        // GET: api/Orders/Latest
+        [HttpGet("latest")]
+        public async Task<ActionResult<Order>> GetLatestOrderId()
+        {
+            return await _context.Orders.OrderByDescending(o => o.CreatedAt).FirstOrDefaultAsync();
+        }
+
         // GET: api/Orders
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Order>>> GetOrders()
