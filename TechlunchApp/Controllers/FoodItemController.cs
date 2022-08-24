@@ -17,9 +17,14 @@ namespace TechlunchApp.Controllers
             List<FoodItemViewModel> FoodItems = new List<FoodItemViewModel>();
             using (var httpClient = new HttpClient())
             {
+                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
                 using (var response = await httpClient.GetAsync($"{Constants.ApiUrl}fooditems"))
                 {
                     string apiResponse = await response.Content.ReadAsStringAsync();
+                    if (!ApiAuthorization.IsAuthorized(response))
+                    {
+                        return Redirect("/logout");
+                    }
                     FoodItems = JsonConvert.DeserializeObject<List<FoodItemViewModel>>(apiResponse);
                 }
             }
@@ -36,13 +41,24 @@ namespace TechlunchApp.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(FoodItemViewModel FoodItemObj)
         {
-            using (var httpClient = new HttpClient())
+            if (ModelState.IsValid)
             {
+
+                using (var httpClient = new HttpClient())
+                {
+                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
                 StringContent content = new StringContent(JsonConvert.SerializeObject(FoodItemObj), Encoding.UTF8, "application/json");
                 var response = await httpClient.PostAsync($"{Constants.ApiUrl}fooditems", content);
+                if (!ApiAuthorization.IsAuthorized(response))
+                {
+                    return Redirect("/logout");
+                }
 
+                }
+                return RedirectToAction("Index");
             }
-            return RedirectToAction("Index");
+
+            return View(FoodItemObj);
         }
 
         [HttpPost]
@@ -50,9 +66,14 @@ namespace TechlunchApp.Controllers
         {
             using (var httpClient = new HttpClient())
             {
+                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
                 using (var response = await httpClient.DeleteAsync($"{Constants.ApiUrl}fooditems/{ItemId}"))
                 {
                     string apiResponse = await response.Content.ReadAsStringAsync();
+                    if (!ApiAuthorization.IsAuthorized(response))
+                    {
+                        return Redirect("/logout");
+                    }
                 }
             }
             return RedirectToAction("Index");

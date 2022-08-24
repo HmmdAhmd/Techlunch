@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TechlunchApi.Data;
 
 namespace TechlunchApi.Migrations
 {
     [DbContext(typeof(TechlunchDbContext))]
-    partial class TechlunchDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220823113749_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -215,7 +217,6 @@ namespace TechlunchApi.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
-
             modelBuilder.Entity("TechlunchApi.Models.Admin", b =>
                 {
                     b.Property<int>("Id")
@@ -249,10 +250,7 @@ namespace TechlunchApi.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
-
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<float>("Price")
                         .HasColumnType("real");
@@ -322,10 +320,7 @@ namespace TechlunchApi.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
-
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("Status")
                         .HasColumnType("bit");
@@ -392,9 +387,7 @@ namespace TechlunchApi.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-
-                    b.Property<float>("EstimatedCost")
-
+                    b.Property<float>("EstimatedPrice")
                         .HasColumnType("real");
 
                     b.Property<int>("FoodItemId")
@@ -468,7 +461,6 @@ namespace TechlunchApi.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
-
 
             modelBuilder.Entity("TechlunchApi.Models.FoodItemIngredients", b =>
                 {

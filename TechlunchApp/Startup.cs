@@ -52,6 +52,18 @@ namespace TechlunchApp
                  pattern: "dashboard",
                  defaults: new { controller = "Home", action = "Dashboard" });
 
+                endpoints.MapControllerRoute(name: "login",
+                 pattern: "login",
+                 defaults: new { controller = "Home", action = "Index" });
+
+                endpoints.MapControllerRoute(name: "register",
+                 pattern: "register",
+                 defaults: new { controller = "Authentication", action = "Register" });
+
+                endpoints.MapControllerRoute(name: "logout",
+                 pattern: "logout",
+                 defaults: new { controller = "Authentication", action = "Logout" });
+
                 endpoints.MapControllerRoute(name: "default",
                             pattern: "{controller=Home}/{action=Index}/{id?}");
             });

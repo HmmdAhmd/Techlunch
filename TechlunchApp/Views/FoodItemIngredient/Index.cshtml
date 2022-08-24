@@ -1,4 +1,4 @@
-﻿@model dynamic
+﻿@model FoodItemIngredientViewModel
 @{
     ViewData["Title"] = "Food Item Ingredients";
 }
@@ -28,7 +28,7 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header align-items-center d-flex">
-                            <h4 class="card-title mb-0 flex-grow-1">Add Food Item - @Model.FoodItem.Name</h4>
+                            <h4 class="card-title mb-0 flex-grow-1">Add Food Item - @ViewBag.FoodItem.Name</h4>
                             <div class="flex-shrink-0">
                                 <div class="form-check form-switch form-switch-right form-switch-md">
                                     <a class="btn btn-warning" href="/fooditem">Go Back</a>
@@ -40,23 +40,25 @@
                             <form asp-controller="FoodItemIngredient" asp-action="Create" method="post">
                                 <div class="row gy-4 mb-2">
                                     <div class="col-xxl-3 col-md-6">
-                                        <input type="hidden" id="Id" name="Id" value="" />
-                                        <input type="hidden" id="FoodItemId" name="FoodItemId" value="@Model.FoodItem.Id" />
+                                        <input type="hidden" id="Id" name="Id" value="0" />
+                                        <input type="hidden" id="FoodItemId" name="FoodItemId" value="@ViewBag.FoodItem.Id" />
                                         <div>
                                             <label for="Name" class="form-label">Ingredient</label>
-                                            <select class="form-select mb-3" name="IngredientId" required>
+                                            <select class="form-select" name="IngredientId" autofocus>
                                                 <option selected value="">Select Ingredient</option>
-                                                @foreach (IngredientViewModel ingredient in Model.Ingredients)
+                                                @foreach (IngredientViewModel ingredient in ViewBag.Ingredients)
                                                 {
                                                     <option value="@ingredient.Id">@ingredient.Name</option>
                                                 }
                                             </select>
+                                            @Html.ValidationMessageFor(model => model.IngredientId, "", new { @class = "text-danger" })
                                         </div>
                                     </div>
                                     <div class="col-xxl-3 col-md-6">
                                         <div>
-                                            <label for="Quantity" class="form-label">Quantity (In Grams)</label>
-                                            <input type="number" class="form-control" name="Quantity" id="Quantity" required>
+                                            @Html.LabelFor(model => model.Quantity, "Quantity", new { htmlAttributes = new { @class = "form-control" } })
+                                            @Html.EditorFor(model => model.Quantity, new { htmlAttributes = new { @type = "number", @class = "form-control" } })
+                                            @Html.ValidationMessageFor(model => model.Quantity, "", new { @class = "text-danger" })
                                         </div>
                                     </div>
                                 </div>
@@ -85,7 +87,6 @@
                                         <thead>
                                             <tr>
                                                 <th scope="col">No.</th>
-                                                <th scope="col">Item</th>
                                                 <th scope="col">Ingredient</th>
                                                 <th scope="col">Quantity</th>
                                                 <th scope="col"></th>
@@ -95,19 +96,18 @@
                                             @{
                                                 int i = 1;
                                             }
-                                            @foreach (FoodItemIngredientViewModel FoodItemIngredient in Model.FoodItemIngredients)
+                                            @foreach (FoodItemIngredientViewModel FoodItemIngredient in ViewBag.FoodItemIngredients)
                                             {
                                                 <tr>
                                                     <th scope="row">@i @{
                                                             i++;
                                                         }</th>
-                                                    <td>@Model.FoodItem.Name</td>
                                                     <td>@FoodItemIngredient.IngredientFK.Name</td>
-                                                    <td>@FoodItemIngredient.Quantity grams</td>
+                                                    <td>@FoodItemIngredient.Quantity</td>
                                                     <td>
                                                         <form asp-action="Delete" method="post">
                                                             <input type="hidden" value="@FoodItemIngredient.Id" name="ItemId" />
-                                                            <input type="hidden" value="@Model.FoodItem.Id" name="FoodItemId" />
+                                                            <input type="hidden" value="@ViewBag.FoodItem.Id" name="FoodItemId" />
                                                             <input type="submit" class="link-danger delete-btn" value="Delete" />
                                                         </form>
                                                     </td>

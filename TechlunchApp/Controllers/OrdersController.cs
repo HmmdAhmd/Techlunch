@@ -353,6 +353,7 @@ namespace TechlunchApp.Controllers
 
                 if(cont)
                 {
+
                     await UpdateQuantityInGeneralInv(orderDetail, false, false);
 
                     StringContent content = new StringContent(JsonConvert.SerializeObject(orderDetail), Encoding.UTF8, "application/json"); ;
@@ -449,7 +450,7 @@ namespace TechlunchApp.Controllers
                         generalInventoryObj = JsonConvert.DeserializeObject<GeneralInventoryViewModel>(apiResponse);
                     }
 
-                    int Quantity = quantity * ingredients[i].Quantity;
+                    int Quantity = (int)(quantity * ingredients[i].Quantity);
                     if (generalInventoryObj == null || generalInventoryObj.AvailableQuantity < Quantity)
                     {
                         return 0;

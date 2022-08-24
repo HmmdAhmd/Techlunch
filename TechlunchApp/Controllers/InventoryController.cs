@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -11,14 +12,21 @@ namespace TechlunchApp.Controllers
 {
     public class InventoryController : Controller
     {
+        private static List<IngredientViewModel> Ingredients = new List<IngredientViewModel>();
+
         public async Task<IActionResult> Index()
         {
             List<GeneralInventoryViewModel> inventoryList = new List<GeneralInventoryViewModel>();
             using (var httpClient = new HttpClient())
             {
+                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
                 using (var response = await httpClient.GetAsync($"{Constants.ApiUrl}generalinventories"))
                 {
                     string apiResponse = await response.Content.ReadAsStringAsync();
+                    if (!ApiAuthorization.IsAuthorized(response))
+                    {
+                        return Redirect("/logout");
+                    }
                     inventoryList = JsonConvert.DeserializeObject<List<GeneralInventoryViewModel>>(apiResponse);
                 }
             }
@@ -28,31 +36,46 @@ namespace TechlunchApp.Controllers
         [HttpGet]
         public async Task<IActionResult> Create()
         {
-            List<IngredientViewModel> Ingredients = new List<IngredientViewModel>();
-
             using (var httpClient = new HttpClient())
             {
+                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
                 using (var IngredientsResponse = await httpClient.GetAsync($"{Constants.ApiUrl}Ingredients"))
                 {
                     string IngredientApiResponse = await IngredientsResponse.Content.ReadAsStringAsync();
+                    if (!ApiAuthorization.IsAuthorized(IngredientsResponse))
+                    {
+                        return Redirect("/logout");
+                    }
                     Ingredients = JsonConvert.DeserializeObject<List<IngredientViewModel>>(IngredientApiResponse);
 
                 }
             }
 
-            return View(Ingredients);
+            ViewBag.Ingredients = Ingredients;
+            return View();
         }
 
         [HttpPost]
         public async Task<IActionResult> Create(InventoryViewModel inventoryObj)
         {
-            using (var httpClient = new HttpClient())
+            if (ModelState.IsValid)
             {
+                using (var httpClient = new HttpClient())
+                {
+                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
                 StringContent content = new StringContent(JsonConvert.SerializeObject(inventoryObj), Encoding.UTF8, "application/json");
                 var response = await httpClient.PostAsync($"{Constants.ApiUrl}inventories", content);
+                if (!ApiAuthorization.IsAuthorized(response))
+                {
+                    return Redirect("/logout");
+                }
 
+                }
+                return RedirectToAction("Index");
             }
-            return RedirectToAction("Index");
+
+            ViewBag.Ingredients = Ingredients;
+            return View(inventoryObj);
         }
 
         [HttpGet]
@@ -63,15 +86,25 @@ namespace TechlunchApp.Controllers
 
             using (var httpClient = new HttpClient())
             {
+                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
                 using (var response = await httpClient.GetAsync($"{Constants.ApiUrl}Inventories/Ingredient/{id}"))
                 {
                     string content = await response.Content.ReadAsStringAsync();
+                    if (!ApiAuthorization.IsAuthorized(response))
+                    {
+                        return Redirect("/logout");
+                    }
                     IngredientHistories = JsonConvert.DeserializeObject<List<IngredientHistoryViewModel>>(content);
                 }
 
                 using (var response = await httpClient.GetAsync($"{Constants.ApiUrl}Ingredients/{id}"))
                 {
+                    httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
                     string content = await response.Content.ReadAsStringAsync();
+                    if (!ApiAuthorization.IsAuthorized(response))
+                    {
+                        return Redirect("/logout");
+                    }
                     ingredientObj = JsonConvert.DeserializeObject<IngredientViewModel>(content);
                 }
             }

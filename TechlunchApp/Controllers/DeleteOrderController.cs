@@ -83,7 +83,7 @@ namespace TechlunchApp.Controllers
 
                 foreach (FoodItemIngredientViewModel foodItemIngredient in foodItemIngredients)
                 {
-                    int Quantity = orderDetailObj.Quantity * foodItemIngredient.Quantity;
+                    int Quantity = (int)(orderDetailObj.Quantity * foodItemIngredient.Quantity);
 
                     GeneralInventoryViewModel generalInventoryObj = new GeneralInventoryViewModel();
 

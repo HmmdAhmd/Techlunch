@@ -10,12 +10,12 @@
                         <div class="row">
                             <div class="col-12">
                                 <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                                    <h4 class="mb-sm-0">Dashboard</h4>
+                                    <h4 class="mb-sm-0">Report</h4>
 
                                     <div class="page-title-right">
                                         <ol class="breadcrumb m-0">
-                                            <li class="breadcrumb-item">Techlunch</li>
-                                            <li class="breadcrumb-item active">Dashboard</li>
+                                            <li class="breadcrumb-item">Reports</li>
+                                            <li class="breadcrumb-item active">Generate Report</li>
                                         </ol>
                                     </div>
 
@@ -28,7 +28,12 @@
                             <div class="col-12">
                                 <div class="card">
                                     <div class="card-header align-items-center d-flex">
-                                        <h4 class="card-title mb-0 flex-grow-1">Ongoing week stats</h4>
+                                        <h4 class="card-title mb-0 flex-grow-1">Report (@ViewData["StartingTime"] - @ViewData["EndingTime"])</h4>
+                                        <div class="flex-shrink-0">
+                                            <div class="form-check form-switch form-switch-right form-switch-md">
+                                                <a class="btn btn-warning" href="/report">Go Back</a>
+                                            </div>
+                                        </div>
                                     </div><!-- end card header -->
                                  </div>
                             </div>
