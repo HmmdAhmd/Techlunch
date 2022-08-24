@@ -67,7 +67,7 @@ namespace TechlunchApi.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(nullable: false),
+                    Name = table.Column<string>(maxLength: 100, nullable: false),
                     Price = table.Column<float>(nullable: false),
                     Status = table.Column<bool>(nullable: false)
                 },
@@ -82,7 +82,7 @@ namespace TechlunchApi.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(nullable: false),
+                    Name = table.Column<string>(maxLength: 100, nullable: false),
                     Status = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
@@ -292,7 +292,7 @@ namespace TechlunchApi.Migrations
                     FoodItemId = table.Column<int>(nullable: false),
                     Quantity = table.Column<int>(nullable: false),
                     Price = table.Column<float>(nullable: false),
-                    EstimatedPrice = table.Column<float>(nullable: false)
+                    EstimatedCost = table.Column<float>(nullable: false)
                 },
                 constraints: table =>
                 {

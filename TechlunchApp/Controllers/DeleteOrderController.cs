@@ -18,16 +18,26 @@ namespace TechlunchApp.Controllers
 
             using (var httpClient = new HttpClient())
             {
+                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
                 using (var Response = await httpClient.GetAsync($"{Constants.ApiUrl}orders/{id}"))
                 {
                     string apiResponse = await Response.Content.ReadAsStringAsync();
+                    if (!ApiAuthorization.IsAuthorized(Response))
+                    {
+                        return Redirect("/logout");
+                    }
                     orderObj = JsonConvert.DeserializeObject<OrderViewModel>(apiResponse);
                 }
 
                 orderObj.Status = false;
 
+                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
                 StringContent content = new StringContent(JsonConvert.SerializeObject(orderObj), Encoding.UTF8, "application/json");
                 var response = await httpClient.PutAsync($"{Constants.ApiUrl}orders/{orderObj.Id}", content);
+                if (!ApiAuthorization.IsAuthorized(response))
+                {
+                    return Redirect("/logout");
+                }
             }
 
             return RedirectToAction("Index", "Orders");
@@ -42,27 +52,42 @@ namespace TechlunchApp.Controllers
 
             using (var httpClient = new HttpClient())
             {
+                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
                 using (var Response = await httpClient.GetAsync($"{Constants.ApiUrl}orderdetails/order/{id}"))
                 {
                     string apiResponse = await Response.Content.ReadAsStringAsync();
+                    if (!ApiAuthorization.IsAuthorized(Response))
+                    {
+                        return Redirect("/logout");
+                    }
                     orderDetailList = JsonConvert.DeserializeObject<List<OrderDetailsViewModel>>(apiResponse);
                 }
 
-                foreach(OrderDetailsViewModel orderDetailObj in orderDetailList)
+                foreach (OrderDetailsViewModel orderDetailObj in orderDetailList)
                 {
                     await DeleteOrderItem(orderDetailObj);
                 }
 
+                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
                 using (var Response = await httpClient.GetAsync($"{Constants.ApiUrl}orders/{id}"))
                 {
                     string apiResponse = await Response.Content.ReadAsStringAsync();
+                    if (!ApiAuthorization.IsAuthorized(Response))
+                    {
+                        return Redirect("/logout");
+                    }
                     orderObj = JsonConvert.DeserializeObject<OrderViewModel>(apiResponse);
                 }
 
                 orderObj.Status = false;
 
+                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
                 StringContent content = new StringContent(JsonConvert.SerializeObject(orderObj), Encoding.UTF8, "application/json");
                 var response = await httpClient.PutAsync($"{Constants.ApiUrl}orders/{orderObj.Id}", content);
+                if (!ApiAuthorization.IsAuthorized(response))
+                {
+                    return Redirect("/logout");
+                }
             }
 
             return RedirectToAction("Index", "Orders");
@@ -75,9 +100,14 @@ namespace TechlunchApp.Controllers
 
             using (var httpClient = new HttpClient())
             {
+                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
                 using (var Response = await httpClient.GetAsync($"{Constants.ApiUrl}fooditemingredients/{orderDetailObj.FoodItemId}"))
                 {
                     string apiResponse = await Response.Content.ReadAsStringAsync();
+                    if (!ApiAuthorization.IsAuthorized(Response))
+                    {
+                        RedirectToAction("Logout", "Authentication");
+                    }
                     foodItemIngredients = JsonConvert.DeserializeObject<List<FoodItemIngredientViewModel>>(apiResponse);
                 }
 
@@ -87,9 +117,14 @@ namespace TechlunchApp.Controllers
 
                     GeneralInventoryViewModel generalInventoryObj = new GeneralInventoryViewModel();
 
+                    httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
                     using (var Response = await httpClient.GetAsync($"{Constants.ApiUrl}generalinventories/ingredientid/{foodItemIngredient.IngredientId}"))
                     {
                         string apiResponse = await Response.Content.ReadAsStringAsync();
+                        if (!ApiAuthorization.IsAuthorized(Response))
+                        {
+                            RedirectToAction("Logout", "Authentication");
+                        }
                         generalInventoryObj = JsonConvert.DeserializeObject<GeneralInventoryViewModel>(apiResponse);
                     }
 
@@ -105,8 +140,13 @@ namespace TechlunchApp.Controllers
         {
             using (var httpClient = new HttpClient())
             {
+                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
                 StringContent content = new StringContent(JsonConvert.SerializeObject(generalInventoryObj), Encoding.UTF8, "application/json");
                 var response = await httpClient.PutAsync($"{Constants.ApiUrl}generalinventories/{generalInventoryObj.Id}", content);
+                if (!ApiAuthorization.IsAuthorized(response))
+                {
+                    RedirectToAction("Logout", "Authentication");
+                }
 
             }
         }

@@ -17,16 +17,26 @@ namespace TechlunchApp.Controllers
 
             using (var httpClient = new HttpClient())
             {
+                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
                 using (var Response = await httpClient.GetAsync($"{Constants.ApiUrl}orders/{orderId}"))
                 {
                     string apiResponse = await Response.Content.ReadAsStringAsync();
+                    if (!ApiAuthorization.IsAuthorized(Response))
+                    {
+                        RedirectToAction("Logout", "Authentication");
+                    }
                     orderObj = JsonConvert.DeserializeObject<OrderViewModel>(apiResponse);
                 }
 
                 orderObj.TotalPrice -= price;
 
+                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
                 StringContent content = new StringContent(JsonConvert.SerializeObject(orderObj), Encoding.UTF8, "application/json");
                 var response = await httpClient.PutAsync($"{Constants.ApiUrl}orders/{orderId}", content);
+                if (!ApiAuthorization.IsAuthorized(response))
+                {
+                    RedirectToAction("Logout", "Authentication");
+                }
             }
         }
 
@@ -41,18 +51,28 @@ namespace TechlunchApp.Controllers
 
             using (var httpClient = new HttpClient())
             {
+                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
                 using (var Response = await httpClient.GetAsync($"{Constants.ApiUrl}orderdetails/{id}"))
                 {
                     string apiResponse = await Response.Content.ReadAsStringAsync();
+                    if (!ApiAuthorization.IsAuthorized(Response))
+                    {
+                        return Redirect("/logout");
+                    }
                     orderDetailObj = JsonConvert.DeserializeObject<OrderDetailsViewModel>(apiResponse);
                     orderId = orderDetailObj.OrderId;
                 }
 
                 await DecrementOrderPrice(orderId, orderDetailObj.Price);
 
+                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
                 using (var Response = await httpClient.GetAsync($"{Constants.ApiUrl}fooditemingredients/{foodItemId}"))
                 {
                     string apiResponse = await Response.Content.ReadAsStringAsync();
+                    if (!ApiAuthorization.IsAuthorized(Response))
+                    {
+                        return Redirect("/logout");
+                    }
                     foodItemIngredients = JsonConvert.DeserializeObject<List<FoodItemIngredientViewModel>>(apiResponse);
                 }
 
@@ -62,9 +82,14 @@ namespace TechlunchApp.Controllers
 
                     GeneralInventoryViewModel generalInventoryObj = new GeneralInventoryViewModel();
 
+                    httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
                     using (var Response = await httpClient.GetAsync($"{Constants.ApiUrl}generalinventories/ingredientid/{foodItemIngredient.IngredientId}"))
                     {
                         string apiResponse = await Response.Content.ReadAsStringAsync();
+                        if (!ApiAuthorization.IsAuthorized(Response))
+                        {
+                            return Redirect("/logout");
+                        }
                         generalInventoryObj = JsonConvert.DeserializeObject<GeneralInventoryViewModel>(apiResponse);
                     }
 
@@ -74,9 +99,14 @@ namespace TechlunchApp.Controllers
 
                 }
 
+                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
                 using (var response = await httpClient.DeleteAsync($"{Constants.ApiUrl}orderdetails/{id}"))
                 {
                     await response.Content.ReadAsStringAsync();
+                    if (!ApiAuthorization.IsAuthorized(response))
+                    {
+                        return Redirect("/logout");
+                    }
                 }
             }
             return RedirectToAction("AddItems", "Orders", new { id = orderId });
@@ -86,8 +116,13 @@ namespace TechlunchApp.Controllers
         {
             using (var httpClient = new HttpClient())
             {
+                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
                 StringContent content = new StringContent(JsonConvert.SerializeObject(generalInventoryObj), Encoding.UTF8, "application/json");
                 var response = await httpClient.PutAsync($"{Constants.ApiUrl}generalinventories/{generalInventoryObj.Id}", content);
+                if (!ApiAuthorization.IsAuthorized(response))
+                {
+                    RedirectToAction("Logout", "Authentication");
+                }
 
             }
         }

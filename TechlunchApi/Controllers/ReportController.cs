@@ -28,18 +28,20 @@ namespace TechlunchApi.Controllers
         [HttpGet("{StartingTime, EndingTime}")]
         public string GetReport(DateTime StartingTime, DateTime EndingTime)
         {
-            
             int TotalOrders = _context.Orders.Where(tbl => tbl.Status == true && tbl.CreatedAt <= EndingTime && tbl.CreatedAt >= StartingTime).Count();
-            float TotalSales = _context.Orders.Where(tbl => tbl.Status == true && tbl.CreatedAt <= EndingTime && tbl.CreatedAt >= StartingTime).Sum(p=>p.TotalPrice);
-            
-            //it depends upon the task 7.1.1 (Cost Estimation Function)
-            float Cost = 0;
-
+            float TotalSales = _context.Orders.Where(tbl => tbl.Status == true && tbl.CreatedAt <= EndingTime && tbl.CreatedAt >= StartingTime).Sum(p => p.TotalPrice);
+            var q =
+            from O in _context.Orders
+            join OD in _context.OrderDetail on O.Id equals OD.OrderId into OS
+            from OD in OS.DefaultIfEmpty()
+            where O.CreatedAt <= EndingTime && O.CreatedAt >= StartingTime && O.Status == true
+            select OD;
+            float TotalCost = q.Sum(p => p.EstimatedCost);
             var report = new
             {
                 TotalOrders = TotalOrders,
                 TotalSales = TotalSales,
-                TotalProfit = TotalSales - Cost
+                TotalProfit = TotalSales - TotalCost
             };
             string jsonData = JsonConvert.SerializeObject(report);
             return jsonData;
