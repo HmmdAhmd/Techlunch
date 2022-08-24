@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +13,7 @@ namespace TechlunchApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class InventoriesController : ControllerBase
     {
         private readonly TechlunchDbContext _context;
@@ -22,6 +24,7 @@ namespace TechlunchApi.Controllers
         }
 
         // GET: api/Inventories
+        
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Inventory>>> GetInventory()
         {
@@ -29,6 +32,7 @@ namespace TechlunchApi.Controllers
         }
 
         // GET: api/Inventories/5
+      
         [HttpGet("{id}")]
         public async Task<ActionResult<Inventory>> GetInventory(int id)
         {
@@ -68,8 +72,9 @@ namespace TechlunchApi.Controllers
             await _context.SaveChangesAsync();
             return true;
         }
-            
+
         // GET: api/Inventories/Ingredient/5
+        
         [HttpGet("Ingredient/{id}")]
         public async Task<ActionResult<IEnumerable<IngredientHistory>>> GetIngredientHistory(int id)
         {
@@ -92,6 +97,7 @@ namespace TechlunchApi.Controllers
         }
 
         // POST: api/Inventories
+       
         [HttpPost]
         public async Task<ActionResult<Inventory>> PostInventory(Inventory inventory)
         {

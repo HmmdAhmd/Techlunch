@@ -16,12 +16,17 @@ namespace TechlunchApp.Controllers
             List<IngredientViewModel> ingredients = new List<IngredientViewModel>();
             using (var httpClient = new HttpClient())
             {
+                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
                 using (var response = await httpClient.GetAsync($"{Constants.ApiUrl}ingredients"))
                 {
                     string apiResponse = await response.Content.ReadAsStringAsync();
+                    if (!ApiAuthorization.IsAuthorized(response)) {
+                        return Redirect("/logout");
+                    }
                     ingredients = JsonConvert.DeserializeObject<List<IngredientViewModel>>(apiResponse);
                 }
             }
+
             return View(ingredients);
         }
 
@@ -34,10 +39,16 @@ namespace TechlunchApp.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(IngredientViewModel ingredientObj)
         {
+
             using (var httpClient = new HttpClient())
             {
+                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
                 StringContent content = new StringContent(JsonConvert.SerializeObject(ingredientObj), Encoding.UTF8, "application/json");
                 var response = await httpClient.PostAsync($"{Constants.ApiUrl}ingredients", content);
+                if (!ApiAuthorization.IsAuthorized(response))
+                {
+                    return Redirect("/logout");
+                }
 
             }
             return RedirectToAction("Index");
@@ -49,9 +60,14 @@ namespace TechlunchApp.Controllers
             IngredientViewModel ingredient = new IngredientViewModel();
             using (var httpClient = new HttpClient())
             {
+                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
                 using (var response = await httpClient.GetAsync($"{Constants.ApiUrl}ingredients/{id}"))
                 {
                     string apiResponse = await response.Content.ReadAsStringAsync();
+                    if (!ApiAuthorization.IsAuthorized(response))
+                    {
+                        return Redirect("/logout");
+                    }
                     ingredient = JsonConvert.DeserializeObject<IngredientViewModel>(apiResponse);
                 }
             }
@@ -63,8 +79,13 @@ namespace TechlunchApp.Controllers
         {
             using (var httpClient = new HttpClient())
             {
+                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
                 StringContent content = new StringContent(JsonConvert.SerializeObject(ingredientObj), Encoding.UTF8, "application/json");
                 var response = await httpClient.PutAsync($"{Constants.ApiUrl}ingredients/{ingredientObj.Id}", content);
+                if (!ApiAuthorization.IsAuthorized(response))
+                {
+                    return Redirect("/logout");
+                }
 
             }
             return RedirectToAction("Index");
@@ -75,9 +96,14 @@ namespace TechlunchApp.Controllers
         {
             using (var httpClient = new HttpClient())
             {
+                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
                 using (var response = await httpClient.DeleteAsync($"{Constants.ApiUrl}ingredients/{id}"))
                 {
                     await response.Content.ReadAsStringAsync();
+                    if (!ApiAuthorization.IsAuthorized(response))
+                    {
+                        return Redirect("/logout");
+                    }
                 }
             }
             return RedirectToAction("Index");

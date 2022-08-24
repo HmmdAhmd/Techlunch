@@ -1,9 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using TechlunchApi.Authentication;
 using TechlunchApi.Models;
 
 namespace TechlunchApi.Data
 {
-    public class TechlunchDbContext : DbContext
+    public class TechlunchDbContext : IdentityDbContext<ApplicationUser>
     {
         public TechlunchDbContext(DbContextOptions<TechlunchDbContext> options)
         : base(options)
