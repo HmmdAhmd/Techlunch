@@ -41,9 +41,14 @@ namespace TechlunchApp.Controllers
                 ReportViewModel report = new ReportViewModel();
                 using (var httpClient = new HttpClient())
                 {
+                    httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
                     using (var response = await httpClient.GetAsync($"{Constants.ApiUrl}report/getreport?StartingTime={St}&EndingTime={Et}"))
                     {
                         string apiResponse = await response.Content.ReadAsStringAsync();
+                        if (!ApiAuthorization.IsAuthorized(response))
+                        {
+                            return Redirect("/logout");
+                        }
                         report = JsonConvert.DeserializeObject<ReportViewModel>(apiResponse);
                     }
                 }
