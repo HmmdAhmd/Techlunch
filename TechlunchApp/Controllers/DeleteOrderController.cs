@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -11,6 +12,13 @@ namespace TechlunchApp.Controllers
 {
     public class DeleteOrderController : Controller
     {
+        private readonly IConfiguration _configuration;
+
+        public DeleteOrderController(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+
         [HttpPost]
         public async Task<IActionResult> DeleteWithoutConfirm(int id)
         {
@@ -19,7 +27,7 @@ namespace TechlunchApp.Controllers
             using (var httpClient = new HttpClient())
             {
                 httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
-                using (var Response = await httpClient.GetAsync($"{Constants.ApiUrl}orders/{id}"))
+                using (var Response = await httpClient.GetAsync($"{_configuration.GetValue<string>("ApiUrl")}orders/{id}"))
                 {
                     string apiResponse = await Response.Content.ReadAsStringAsync();
                     if (!ApiAuthorization.IsAuthorized(Response))
@@ -33,7 +41,7 @@ namespace TechlunchApp.Controllers
 
                 httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
                 StringContent content = new StringContent(JsonConvert.SerializeObject(orderObj), Encoding.UTF8, "application/json");
-                var response = await httpClient.PutAsync($"{Constants.ApiUrl}orders/{orderObj.Id}", content);
+                var response = await httpClient.PutAsync($"{_configuration.GetValue<string>("ApiUrl")}orders/{orderObj.Id}", content);
                 if (!ApiAuthorization.IsAuthorized(response))
                 {
                     return Redirect("/logout");
@@ -53,7 +61,7 @@ namespace TechlunchApp.Controllers
             using (var httpClient = new HttpClient())
             {
                 httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
-                using (var Response = await httpClient.GetAsync($"{Constants.ApiUrl}orderdetails/order/{id}"))
+                using (var Response = await httpClient.GetAsync($"{_configuration.GetValue<string>("ApiUrl")}orderdetails/order/{id}"))
                 {
                     string apiResponse = await Response.Content.ReadAsStringAsync();
                     if (!ApiAuthorization.IsAuthorized(Response))
@@ -69,7 +77,7 @@ namespace TechlunchApp.Controllers
                 }
 
                 httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
-                using (var Response = await httpClient.GetAsync($"{Constants.ApiUrl}orders/{id}"))
+                using (var Response = await httpClient.GetAsync($"{_configuration.GetValue<string>("ApiUrl")}orders/{id}"))
                 {
                     string apiResponse = await Response.Content.ReadAsStringAsync();
                     if (!ApiAuthorization.IsAuthorized(Response))
@@ -83,7 +91,7 @@ namespace TechlunchApp.Controllers
 
                 httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
                 StringContent content = new StringContent(JsonConvert.SerializeObject(orderObj), Encoding.UTF8, "application/json");
-                var response = await httpClient.PutAsync($"{Constants.ApiUrl}orders/{orderObj.Id}", content);
+                var response = await httpClient.PutAsync($"{_configuration.GetValue<string>("ApiUrl")}orders/{orderObj.Id}", content);
                 if (!ApiAuthorization.IsAuthorized(response))
                 {
                     return Redirect("/logout");
@@ -101,7 +109,7 @@ namespace TechlunchApp.Controllers
             using (var httpClient = new HttpClient())
             {
                 httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
-                using (var Response = await httpClient.GetAsync($"{Constants.ApiUrl}fooditemingredients/{orderDetailObj.FoodItemId}"))
+                using (var Response = await httpClient.GetAsync($"{_configuration.GetValue<string>("ApiUrl")}fooditemingredients/{orderDetailObj.FoodItemId}"))
                 {
                     string apiResponse = await Response.Content.ReadAsStringAsync();
                     if (!ApiAuthorization.IsAuthorized(Response))
@@ -118,7 +126,7 @@ namespace TechlunchApp.Controllers
                     GeneralInventoryViewModel generalInventoryObj = new GeneralInventoryViewModel();
 
                     httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
-                    using (var Response = await httpClient.GetAsync($"{Constants.ApiUrl}generalinventories/ingredientid/{foodItemIngredient.IngredientId}"))
+                    using (var Response = await httpClient.GetAsync($"{_configuration.GetValue<string>("ApiUrl")}generalinventories/ingredientid/{foodItemIngredient.IngredientId}"))
                     {
                         string apiResponse = await Response.Content.ReadAsStringAsync();
                         if (!ApiAuthorization.IsAuthorized(Response))
@@ -142,7 +150,7 @@ namespace TechlunchApp.Controllers
             {
                 httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
                 StringContent content = new StringContent(JsonConvert.SerializeObject(generalInventoryObj), Encoding.UTF8, "application/json");
-                var response = await httpClient.PutAsync($"{Constants.ApiUrl}generalinventories/{generalInventoryObj.Id}", content);
+                var response = await httpClient.PutAsync($"{_configuration.GetValue<string>("ApiUrl")}generalinventories/{generalInventoryObj.Id}", content);
                 if (!ApiAuthorization.IsAuthorized(response))
                 {
                     RedirectToAction("Logout", "Authentication");

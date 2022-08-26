@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -11,6 +12,12 @@ namespace TechlunchApp.Controllers
 {
     public class AuthenticationController : Controller
     {
+        private readonly IConfiguration _configuration;
+
+        public AuthenticationController(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
         public IActionResult Index()
         {
             return View();
@@ -23,10 +30,10 @@ namespace TechlunchApp.Controllers
             using (var httpClient = new HttpClient())
             {
                 StringContent content = new StringContent(JsonConvert.SerializeObject(loginObj), Encoding.UTF8, "application/json");
-                var response = await httpClient.PostAsync($"{Constants.ApiUrl}authenticate/login", content);
+                var response = await httpClient.PostAsync($"{_configuration.GetValue<string>("ApiUrl")}authenticate/login", content);
                 string apiResponse = await response.Content.ReadAsStringAsync();
                 if (!response.IsSuccessStatusCode) {
-                    TempData["ErrorMessage"]  = "The Username or password is incorrect";
+                    TempData["ErrorMessage"]  = Constants.LoginErrorMessage;
                     return RedirectToAction("Index","Home");
                 }
                 token_detail = JsonConvert.DeserializeObject<ResponseViewModel>(apiResponse);
@@ -55,19 +62,19 @@ namespace TechlunchApp.Controllers
             using (var httpClient = new HttpClient())
             {
                 StringContent content = new StringContent(JsonConvert.SerializeObject(registerObj), Encoding.UTF8, "application/json");
-                var response = await httpClient.PostAsync($"{Constants.ApiUrl}authenticate/register", content);
+                var response = await httpClient.PostAsync($"{_configuration.GetValue<string>("ApiUrl")}authenticate/register", content);
                 if (response.StatusCode == System.Net.HttpStatusCode.Conflict)
                 {
-                    TempData["ErrorMessage"] = "User Already Exist";
+                    TempData["ErrorMessage"] = Constants.UserExistErrorMessage;
                     return RedirectToAction("Register", "Authentication");
                 }
                 else if (response.StatusCode == System.Net.HttpStatusCode.InternalServerError) {
-                    TempData["ErrorMessage"] = "Password must contain Non-Alphanumeric,Digit and Upper Case letter";
+                    TempData["ErrorMessage"] = Constants.PasswordErrorMessage;
                     return RedirectToAction("Register", "Authentication");
                 }
 
             }
-            TempData["SuccessMessage"] = "Account Created Successfully";
+            TempData["SuccessMessage"] = Constants.SignupSuccessMessage;
             return RedirectToAction("Index", "Home");
         }
 

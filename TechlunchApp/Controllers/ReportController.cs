@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,13 @@ namespace TechlunchApp.Controllers
     {
 
         private static bool message = false;
+        private readonly IConfiguration _configuration;
+
+        public ReportController(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+
         public IActionResult Index()
         {
             ViewBag.Message = message;
@@ -42,7 +50,7 @@ namespace TechlunchApp.Controllers
                 using (var httpClient = new HttpClient())
                 {
                     httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
-                    using (var response = await httpClient.GetAsync($"{Constants.ApiUrl}report/getreport?StartingTime={St}&EndingTime={Et}"))
+                    using (var response = await httpClient.GetAsync($"{_configuration.GetValue<string>("ApiUrl")}report/getreport?StartingTime={St}&EndingTime={Et}"))
                     {
                         string apiResponse = await response.Content.ReadAsStringAsync();
                         if (!ApiAuthorization.IsAuthorized(response))
@@ -52,8 +60,8 @@ namespace TechlunchApp.Controllers
                         report = JsonConvert.DeserializeObject<ReportViewModel>(apiResponse);
                     }
                 }
-                ViewData["StartingTime"] = st.ToString("MM/dd/yyyy");
-                ViewData["EndingTime"] = et.ToString("MM/dd/yyyy");
+                ViewData["StartingTime"] = st.ToString(Constants.DateFormat);
+                ViewData["EndingTime"] = et.ToString(Constants.DateFormat);
                 return View("ShowReport", report);
             }
 

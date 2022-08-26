@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System;
 using System.Diagnostics;
@@ -12,6 +13,12 @@ namespace TechlunchApp.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly IConfiguration _configuration;
+
+        public HomeController(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
         public IActionResult Index()
         {
             if (Request.Cookies["token"] != null) {
@@ -30,7 +37,7 @@ namespace TechlunchApp.Controllers
             using (var httpClient = new HttpClient())
             {
                 httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
-                using (var response = await httpClient.GetAsync($"{Constants.ApiUrl}report/getreport?StartingTime={st}&EndingTime={et}"))
+                using (var response = await httpClient.GetAsync($"{_configuration.GetValue<string>("ApiUrl")}report/getreport?StartingTime={st}&EndingTime={et}"))
                 {
                     string apiResponse = await response.Content.ReadAsStringAsync();
                     if (!ApiAuthorization.IsAuthorized(response))
