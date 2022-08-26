@@ -528,13 +528,6 @@ namespace TechlunchApp.Controllers
             return RedirectToAction("AddItems", new { id = orderDetail.OrderId });
         }
 
-
-        [HttpPost]
-        public async Task<IActionResult> AddItems()
-        {
-            return RedirectToAction("Index");
-        }
-
         public async Task<IActionResult> Delete(int id)
         {
             OrderViewModel orderObj = new OrderViewModel();
@@ -554,107 +547,6 @@ namespace TechlunchApp.Controllers
             }
 
             return View(orderObj);
-        }
-
-        private async Task UpdateQuantityInGeneralInventory(List<GeneralInventoryViewModel> generalInventoryList)
-        {
-            foreach (GeneralInventoryViewModel generalInventoryObj in generalInventoryList)
-            {
-                using (var httpClient = new HttpClient())
-                {
-                    httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
-                    StringContent content = new StringContent(JsonConvert.SerializeObject(generalInventoryObj), Encoding.UTF8, "application/json");
-                    var response = await httpClient.PutAsync($"{Constants.ApiUrl}generalinventories/{generalInventoryObj.Id}", content);
-                    if (!ApiAuthorization.IsAuthorized(response))
-                    {
-                        RedirectToAction("Logout", "Authentication");
-                    }
-
-                }
-            }
-        }
-
-        private async Task<float> CheckIngredientsAvailability(int foodItemId, int quantity)
-        {
-            List<FoodItemIngredientViewModel> ingredients = new List<FoodItemIngredientViewModel>();
-            List<GeneralInventoryViewModel> generalInventoryList = new List<GeneralInventoryViewModel>();
-
-            float estPrice = 0;
-
-            using (var httpClient = new HttpClient())
-            {
-                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
-                using (var response = await httpClient.GetAsync($"{Constants.ApiUrl}fooditemingredients/{foodItemId}"))
-                {
-                    string apiResponse = await response.Content.ReadAsStringAsync();
-                    if (!ApiAuthorization.IsAuthorized(response))
-                    {
-                        RedirectToAction("Logout", "Authentication");
-                    }
-                    ingredients = JsonConvert.DeserializeObject<List<FoodItemIngredientViewModel>>(apiResponse);
-                }
-
-                for (int i = 0; i < ingredients.Count; i++)
-                {
-                    GeneralInventoryViewModel generalInventoryObj = new GeneralInventoryViewModel();
-
-                    httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
-                    using (var response = await httpClient.GetAsync($"{Constants.ApiUrl}generalinventories/ingredient/{ingredients[i].IngredientId}"))
-                    {
-                        string apiResponse = await response.Content.ReadAsStringAsync();
-                        if (!ApiAuthorization.IsAuthorized(response))
-                        {
-                            RedirectToAction("Logout", "Authentication");
-                        }
-                        generalInventoryObj = JsonConvert.DeserializeObject<GeneralInventoryViewModel>(apiResponse);
-                    }
-
-                    int Quantity = (int)(quantity * ingredients[i].Quantity);
-                    if (generalInventoryObj == null || generalInventoryObj.AvailableQuantity < Quantity)
-                    {
-                        return 0;
-                    }
-                    else
-                    {
-                        estPrice += generalInventoryObj.AveragePrice * Quantity;
-                        generalInventoryObj.AvailableQuantity -= Quantity;
-                        generalInventoryList.Add(generalInventoryObj);
-                    }
-                }
-            }
-
-            await UpdateQuantityInGeneralInventory(generalInventoryList);
-
-            return estPrice;
-        }
-
-        private async Task IncrementOrderPrice(int orderId, float price)
-        {
-            OrderViewModel orderObj = new OrderViewModel();
-
-            using (var httpClient = new HttpClient())
-            {
-                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
-                using (var Response = await httpClient.GetAsync($"{Constants.ApiUrl}orders/{orderId}"))
-                {
-                    string apiResponse = await Response.Content.ReadAsStringAsync();
-                    if (!ApiAuthorization.IsAuthorized(Response))
-                    {
-                        RedirectToAction("Logout", "Authentication");
-                    }
-                    orderObj = JsonConvert.DeserializeObject<OrderViewModel>(apiResponse);
-                }
-
-                orderObj.TotalPrice += price;
-
-                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
-                StringContent content = new StringContent(JsonConvert.SerializeObject(orderObj), Encoding.UTF8, "application/json");
-                var response = await httpClient.PutAsync($"{Constants.ApiUrl}orders/{orderId}", content);
-                if (!ApiAuthorization.IsAuthorized(response))
-                {
-                    RedirectToAction("Logout", "Authentication");
-                }
-            }
         }
     }
 }
