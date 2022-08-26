@@ -73,7 +73,7 @@ namespace TechlunchApp.Controllers
 
 
         [HttpGet]
-         public async Task<IActionResult> Logout()
+         public IActionResult Logout()
         {
             Response.Cookies.Delete("token");
             Response.Cookies.Delete("user");
