@@ -212,12 +212,12 @@ namespace TechlunchApp.Controllers
                     orderDetailsList = JsonConvert.DeserializeObject<List<OrderDetailsViewModel>>(apiResponse);
                 }
 
-                for (int i = 0; i < foodItems.Count;)
+                for (int foodItemIndex = 0; foodItemIndex < foodItems.Count;)
                 {
                     List<FoodItemIngredientViewModel> temp = new List<FoodItemIngredientViewModel>();
 
                     httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
-                    using (var response = await httpClient.GetAsync($"{_configuration.GetValue<string>("ApiUrl")}fooditemingredients/{foodItems[i].Id}"))
+                    using (var response = await httpClient.GetAsync($"{_configuration.GetValue<string>("ApiUrl")}fooditemingredients/{foodItems[foodItemIndex].Id}"))
                     {
                         string apiResponse = await response.Content.ReadAsStringAsync();
                         if (!ApiAuthorization.IsAuthorized(response))
@@ -228,7 +228,7 @@ namespace TechlunchApp.Controllers
                     }
                     if (temp.Count == 0)
                     {
-                        foodItems.Remove(foodItems[i]);
+                        foodItems.Remove(foodItems[foodItemIndex]);
                     }
                     else
                     {
@@ -256,14 +256,14 @@ namespace TechlunchApp.Controllers
                                 availableQuantity = q;
                             }
                         }
-                        foodItems[i].AvailableQuantity = availableQuantity;
+                        foodItems[foodItemIndex].AvailableQuantity = availableQuantity;
 
                         bool cont = true;
                         foreach (OrderDetailsViewModel orderDetail in orderDetailsList)
                         {
-                            if (foodItems[i].Id == orderDetail.FoodItemId)
+                            if (foodItems[foodItemIndex].Id == orderDetail.FoodItemId)
                             {
-                                foodItems[i].Quantity = orderDetail.Quantity;
+                                foodItems[foodItemIndex].Quantity = orderDetail.Quantity;
                                 cont = false;
                             }
                             if (!cont)
@@ -271,7 +271,7 @@ namespace TechlunchApp.Controllers
                                 break;
                             }
                         }
-                        i++;
+                        foodItemIndex++;
                     }
                 }
             }

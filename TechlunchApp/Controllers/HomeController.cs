@@ -31,14 +31,14 @@ namespace TechlunchApp.Controllers
         public async Task<IActionResult> Dashboard()
         {
 
-            string st = DateTime.Now.StartOfWeek(DayOfWeek.Monday).ToString("MM/dd/yyyy hh:mm tt");
-            string et = DateTime.Now.ToString("MM/dd/yyyy hh:mm tt");
+            string reportStartDateTime = DateTime.Now.StartOfWeek(DayOfWeek.Monday).ToString("MM/dd/yyyy hh:mm tt");
+            string reportEndDateTime = DateTime.Now.ToString("MM/dd/yyyy hh:mm tt");
 
             ReportViewModel report = new ReportViewModel();
             using (var httpClient = new HttpClient())
             {
                 httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
-                using (var response = await httpClient.GetAsync($"{_configuration.GetValue<string>("ApiUrl")}report/getreport?StartingTime={st}&EndingTime={et}"))
+                using (var response = await httpClient.GetAsync($"{_configuration.GetValue<string>("ApiUrl")}report/getreport?StartingTime={reportStartDateTime}&EndingTime={reportEndDateTime}"))
                 {
                     string apiResponse = await response.Content.ReadAsStringAsync();
                     if (!ApiAuthorization.IsAuthorized(response))
