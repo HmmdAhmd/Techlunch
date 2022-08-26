@@ -44,7 +44,7 @@
                                         <input type="hidden" id="FoodItemId" name="FoodItemId" value="@ViewBag.FoodItem.Id" />
                                         <div>
                                             <label for="Name" class="form-label">Ingredient</label>
-                                            <select class="form-select" name="IngredientId" autofocus>
+                                            <select class="form-select" name="IngredientId" data-val="true" data-val-required="Please select ingredient" autofocus>
                                                 <option selected value="">Select Ingredient</option>
                                                 @foreach (IngredientViewModel ingredient in ViewBag.Ingredients)
                                                 {

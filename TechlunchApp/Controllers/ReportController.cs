@@ -23,7 +23,7 @@ namespace TechlunchApp.Controllers
         public async Task<IActionResult> GenerateReport(GenerateReportViewModel generateReportObj)
         {
             message = false;
-
+            
             if (ModelState.IsValid)
             {
                 DateTime st = (DateTime)generateReportObj.StartingTime;
@@ -37,7 +37,7 @@ namespace TechlunchApp.Controllers
 
                 
                 string St = st.ToString("MM/dd/yyyy hh:mm tt");
-                string Et = et.ToString("MM/dd/yyyy hh:mm tt");
+                string Et = et.ToString("MM/dd/yyyy")+" 11:59:59 pm";
                 ReportViewModel report = new ReportViewModel();
                 using (var httpClient = new HttpClient())
                 {
@@ -52,8 +52,8 @@ namespace TechlunchApp.Controllers
                         report = JsonConvert.DeserializeObject<ReportViewModel>(apiResponse);
                     }
                 }
-                ViewData["StartingTime"] = generateReportObj.StartingTime;
-                ViewData["EndingTime"] = generateReportObj.EndingTime;
+                ViewData["StartingTime"] = st.ToString("MM/dd/yyyy");
+                ViewData["EndingTime"] = et.ToString("MM/dd/yyyy");
                 return View("ShowReport", report);
             }
 

@@ -26,7 +26,7 @@ namespace TechlunchApp.Controllers
                 var response = await httpClient.PostAsync($"{Constants.ApiUrl}authenticate/login", content);
                 string apiResponse = await response.Content.ReadAsStringAsync();
                 if (!response.IsSuccessStatusCode) {
-                    TempData["ErrorMessage"]  = "Invalid Credentials";
+                    TempData["ErrorMessage"]  = "The Username or password is incorrect";
                     return RedirectToAction("Index","Home");
                 }
                 token_detail = JsonConvert.DeserializeObject<ResponseViewModel>(apiResponse);
@@ -35,6 +35,7 @@ namespace TechlunchApp.Controllers
 
             // Add the cookie to the response cookie collection
             Response.Cookies.Append("token", token_detail.Token);
+            Response.Cookies.Append("user", token_detail.User);
             return Redirect("/dashboard");
         }
 
@@ -75,6 +76,7 @@ namespace TechlunchApp.Controllers
          public async Task<IActionResult> Logout()
         {
             Response.Cookies.Delete("token");
+            Response.Cookies.Delete("user");
             return Redirect("/");
         }
     }

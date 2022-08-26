@@ -42,7 +42,7 @@
                                     <div class="col-xxl-3 col-md-6">
                                         <div>
                                             @Html.LabelFor(model => model.IngredientId, "Ingredient", new { htmlAttributes = new { @type="number", @class = "form-control" } })
-                                            <select class="form-select" name="IngredientId" autofocus>
+                                            <select class="form-select" name="IngredientId" data-val="true" data-val-required="Please select ingredient" autofocus>
                                                 <option selected value="">Select Ingredient</option>
                                                 @foreach (IngredientViewModel ingredient in ViewBag.Ingredients)
                                                 {

@@ -46,14 +46,14 @@
                                     <div class="col-xxl-3 col-md-6">
                                         <div>
                                             @Html.LabelFor(model => model.StartingTime, "Starting Time", new { htmlAttributes = new { @class = "form-control" } })
-                                            @Html.EditorFor(model => model.StartingTime, new { htmlAttributes = new { @type = "datetime-local", @class = "form-control" } })
+                                            @Html.EditorFor(model => model.StartingTime, new { htmlAttributes = new { @type = "date", @class = "form-control" } })
                                             @Html.ValidationMessageFor(model => model.StartingTime, "", new { @class = "text-danger" })
                                         </div>
                                     </div>
                                     <div class="col-xxl-3 col-md-6">
                                         <div>
                                             @Html.LabelFor(model => model.EndingTime, "Ending Time", new { htmlAttributes = new { @class = "form-control" } })
-                                            @Html.EditorFor(model => model.EndingTime, new { htmlAttributes = new { @type = "datetime-local", @class = "form-control" } })
+                                            @Html.EditorFor(model => model.EndingTime, new { htmlAttributes = new { @type = "date", @class = "form-control" } })
                                             @Html.ValidationMessageFor(model => model.EndingTime, "", new { @class = "text-danger" })
                                         </div>
                                     </div>
