@@ -11,7 +11,6 @@ namespace TechlunchApi.Data
         : base(options)
         {
         }
-        public DbSet<Admin> Admins { get; set; }
         public DbSet<Ingredient> Ingredients { get; set; }
         public DbSet<Inventory> Inventory { get; set; }
         public DbSet<FoodItem> FoodItems { get; set; }
