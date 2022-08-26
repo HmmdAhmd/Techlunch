@@ -59,8 +59,8 @@
                     <div class="row">
                         @foreach (FoodItemViewModel foodItem in Model.FoodItems)
                         {
-
-                            <div class="card product col-xxl-5" style="margin-right:20px">
+                            <div class="col-xxl-5">
+                            <div class="card product " style="margin-right:20px">
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="col-sm">
@@ -87,7 +87,7 @@
                                                     @*<button type="submit" class="plus">+</button>*@
                                                     @if (@foodItem.Quantity >= @foodItem.AvailableQuantity)
                                                     {
-                                                        <button disabled type="submit" class="plus">+</button>
+                                                        <button disabled style="cursor:no-drop" type="submit" title="This Item can't be added because its ingredients are missing from inventory." class="plus">+</button>
                                                     }
                                                     else
                                                     {
@@ -107,6 +107,7 @@
                                         </div>
                                     </div>
                                 </div>
+                            </div>
                             </div>
                             i++;
                         }

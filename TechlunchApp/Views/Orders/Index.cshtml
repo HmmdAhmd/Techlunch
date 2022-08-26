@@ -64,7 +64,7 @@
                                                 <tr>
                                                     <th>@i</th>
                                                     <td>@r.TotalPrice</td>
-                                                    <td>@r.CreatedAt</td>
+                                                    <td>@r.CreatedAt.ToString("MM/dd/yyyy hh:mm tt")</td>
                                                     <td>
                                                         @if (!@r.Confirmed && @r.TotalPrice != 0)
                                                         {
