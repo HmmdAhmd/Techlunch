@@ -13,7 +13,7 @@ namespace TechlunchApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class IngredientsController : ControllerBase
     {
         private readonly TechlunchDbContext _context;
