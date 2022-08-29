@@ -13,28 +13,17 @@ namespace TechlunchApp.Controllers
     public class IngredientsController : Controller
     {
         private readonly IConfiguration _configuration;
-
-        public IngredientsController(IConfiguration configuration)
+        private readonly IApiHelper _apiHelper;
+        public IngredientsController(IConfiguration configuration, IApiHelper ApiHelper)
         {
             _configuration = configuration;
+            _apiHelper = ApiHelper;
         }
+        
         public async Task<IActionResult> Index()
         {
-            List<IngredientViewModel> ingredients = new List<IngredientViewModel>();
-            using (var httpClient = new HttpClient())
-            {
-                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
-                using (var response = await httpClient.GetAsync($"{_configuration.GetValue<string>("ApiUrl")}ingredients"))
-                {
-                    string apiResponse = await response.Content.ReadAsStringAsync();
-                    if (!ApiAuthorization.IsAuthorized(response))
-                    {
-                        return Redirect("/logout");
-                    }
-                    ingredients = JsonConvert.DeserializeObject<List<IngredientViewModel>>(apiResponse);
-                }
-            }
-
+           
+            List<IngredientViewModel> ingredients = await _apiHelper.Get<IngredientViewModel>("ingredients");
             return View(ingredients);
         }
 
