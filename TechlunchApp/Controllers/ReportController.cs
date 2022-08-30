@@ -1,8 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
 using System;
-using System.Net.Http;
 using System.Threading.Tasks;
 using TechlunchApp.Common;
 using TechlunchApp.ViewModels;
@@ -42,13 +39,13 @@ namespace TechlunchApp.Controllers
                     return View("Index", generateReportObj);
                 }
 
-                string St = st.ToString("MM/dd/yyyy hh:mm tt");
-                string Et = et.ToString("MM/dd/yyyy") + " 11:59:59 pm";
+                string StartingDate = startingDateTime.ToString("MM/dd/yyyy hh:mm tt");
+                string EndingDate = startingDateTime.ToString("MM/dd/yyyy") + " 11:59:59 pm";
 
-                ReportViewModel report = await _apiHelper.Get<ReportViewModel>($"report/getreport?StartingTime={St}&EndingTime={Et}");
+                ReportViewModel report = await _apiHelper.Get<ReportViewModel>($"report/getreport?StartingTime={StartingDate}&EndingTime={EndingDate}");
 
-                ViewData["StartingTime"] = st.ToString(Constants.DateFormat);
-                ViewData["EndingTime"] = et.ToString(Constants.DateFormat);
+                ViewData["StartingTime"] = startingDateTime.ToString(Constants.DateFormat);
+                ViewData["EndingTime"] = endingDateTime.ToString(Constants.DateFormat);
 
                 return View("ShowReport", report);
             }
