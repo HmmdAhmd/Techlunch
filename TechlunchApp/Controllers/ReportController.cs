@@ -40,7 +40,7 @@ namespace TechlunchApp.Controllers
                 }
 
                 string StartingDate = startingDateTime.ToString("MM/dd/yyyy hh:mm tt");
-                string EndingDate = startingDateTime.ToString("MM/dd/yyyy") + " 11:59:59 pm";
+                string EndingDate = endingDateTime.ToString("MM/dd/yyyy") + " 11:59:59 pm";
 
                 ReportViewModel report = await _apiHelper.Get<ReportViewModel>($"report/getreport?StartingTime={StartingDate}&EndingTime={EndingDate}");
 
