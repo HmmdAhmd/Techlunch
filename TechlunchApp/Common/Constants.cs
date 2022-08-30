@@ -2,7 +2,7 @@
 {
     public static class Constants
     {
-        public const string DateFormat = "MM/dd/yyyy";
+        public const string DateFormat = "dd/MM/yyyy";
         public const string LoginErrorMessage = "The Username or password is incorrect";
         public const string UserExistErrorMessage = "User Already Exist";
         public const string PasswordErrorMessage = "Password must contain Non-Alphanumeric,Digit and Upper Case letter";

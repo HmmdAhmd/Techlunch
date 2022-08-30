@@ -31,8 +31,8 @@ namespace TechlunchApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<OrderDetail>> GetOrderDetail(int id)
         {
-            var orderDetail = await _context.OrderDetail.Include(o => o.FoodItemFK)
-                .SingleOrDefaultAsync(o => o.Id == id);
+            var orderDetail = await _context.OrderDetail.Include(orderDetailObj => orderDetailObj.FoodItemFK)
+                .SingleOrDefaultAsync(orderDetailObj => orderDetailObj.Id == id);
 
             if (orderDetail == null)
             {
@@ -44,7 +44,7 @@ namespace TechlunchApi.Controllers
 
         private bool OrderDetailExists(int id)
         {
-            return _context.OrderDetail.Any(e => e.Id == id);
+            return _context.OrderDetail.Any(orderDetailObj => orderDetailObj.Id == id);
         }
 
         // PUT: api/OrderDetails/5
@@ -81,8 +81,8 @@ namespace TechlunchApi.Controllers
         [HttpGet("Order/{id}")]
         public async Task<ActionResult<IEnumerable<OrderDetail>>> GetOrderDetails(int id)
         {
-            return await _context.OrderDetail.Include(o => o.FoodItemFK).Where(i => i.OrderId == id)
-                .OrderByDescending(i => i.Id).ToListAsync();
+            return await _context.OrderDetail.Include(o => o.FoodItemFK).Where(orderDetailObj => orderDetailObj.OrderId == id)
+                .OrderByDescending(orderDetailObj => orderDetailObj.Id).ToListAsync();
         }
 
         // POST: api/OrderDetails

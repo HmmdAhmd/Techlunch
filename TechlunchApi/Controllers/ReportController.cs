@@ -23,8 +23,8 @@ namespace TechlunchApi.Controllers
         [HttpGet("{StartingTime, EndingTime}")]
         public string GetReport(DateTime StartingTime, DateTime EndingTime)
         {
-            int TotalOrders = _context.Orders.Where(tbl => tbl.Status == true && tbl.CreatedAt <= EndingTime && tbl.CreatedAt >= StartingTime).Count();
-            float TotalSales = _context.Orders.Where(tbl => tbl.Status == true && tbl.CreatedAt <= EndingTime && tbl.CreatedAt >= StartingTime).Sum(p => p.TotalPrice);
+            int TotalOrders = _context.Orders.Where(order => order.Status == true && order.CreatedAt <= EndingTime && order.CreatedAt >= StartingTime).Count();
+            float TotalSales = _context.Orders.Where(order => order.Status == true && order.CreatedAt <= EndingTime && order.CreatedAt >= StartingTime).Sum(order => order.TotalPrice);
             var q =
             from O in _context.Orders
             join OD in _context.OrderDetail on O.Id equals OD.OrderId into OS

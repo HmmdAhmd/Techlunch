@@ -33,23 +33,23 @@ namespace TechlunchApp.Controllers
 
             if (ModelState.IsValid)
             {
-                DateTime st = (DateTime)generateReportObj.StartingTime;
-                DateTime et = (DateTime)generateReportObj.EndingTime;
+                DateTime startingDateTime = (DateTime)generateReportObj.StartingTime;
+                DateTime endingDateTime = (DateTime)generateReportObj.EndingTime;
 
-                if (st > et)
+                if (startingDateTime > endingDateTime)
                 {
                     ViewBag.Message = true;
                     return View("Index", generateReportObj);
                 }
 
 
-                string St = st.ToString("MM/dd/yyyy hh:mm tt");
-                string Et = et.ToString("MM/dd/yyyy") + " 11:59:59 pm";
+                string startingDate = startingDateTime.ToString("MM/dd/yyyy hh:mm tt");
+                string endingDate = endingDateTime.ToString("MM/dd/yyyy") + " 11:59:59 pm";
                 ReportViewModel report = new ReportViewModel();
                 using (var httpClient = new HttpClient())
                 {
                     httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
-                    using (var response = await httpClient.GetAsync($"{_configuration.GetValue<string>("ApiUrl")}report/getreport?StartingTime={St}&EndingTime={Et}"))
+                    using (var response = await httpClient.GetAsync($"{_configuration.GetValue<string>("ApiUrl")}report/getreport?StartingTime={startingDate}&EndingTime={endingDate}"))
                     {
                         string apiResponse = await response.Content.ReadAsStringAsync();
                         if (!ApiAuthorization.IsAuthorized(response))
@@ -59,8 +59,8 @@ namespace TechlunchApp.Controllers
                         report = JsonConvert.DeserializeObject<ReportViewModel>(apiResponse);
                     }
                 }
-                ViewData["StartingTime"] = st.ToString(Constants.DateFormat);
-                ViewData["EndingTime"] = et.ToString(Constants.DateFormat);
+                ViewData["StartingTime"] = startingDateTime.ToString(Constants.DateFormat);
+                ViewData["EndingTime"] = endingDateTime.ToString(Constants.DateFormat);
                 return View("ShowReport", report);
             }
 

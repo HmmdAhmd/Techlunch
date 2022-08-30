@@ -26,7 +26,7 @@ namespace TechlunchApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Inventory>>> GetInventory()
         {
-            return await _context.Inventory.Include(i => i.IngredientFK).ToListAsync();
+            return await _context.Inventory.Include(inventoryObj => inventoryObj.IngredientFK).ToListAsync();
         }
 
         // GET: api/Inventories/5
@@ -34,8 +34,8 @@ namespace TechlunchApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Inventory>> GetInventory(int id)
         {
-            var inventory = await _context.Inventory.Include(i => i.IngredientFK)
-                .FirstOrDefaultAsync(i => i.Id == id);
+            var inventory = await _context.Inventory.Include(inventoryObj => inventoryObj.IngredientFK)
+                .FirstOrDefaultAsync(inventoryObj => inventoryObj.Id == id);
 
             if (inventory == null)
             {
@@ -48,7 +48,7 @@ namespace TechlunchApi.Controllers
         private async Task<bool> AddToGeneralInventory(Inventory inventory)
         {
             var generalInventory = await _context.GeneralInventory.SingleOrDefaultAsync(
-                i => i.IngredientId == inventory.IngredientId);
+                generalInventoryObj => generalInventoryObj.IngredientId == inventory.IngredientId);
 
             if (generalInventory == null) // add a new record
             {
@@ -77,10 +77,10 @@ namespace TechlunchApi.Controllers
         [HttpGet("Ingredient/{id}")]
         public async Task<ActionResult<IEnumerable<IngredientHistory>>> GetIngredientHistory(int id)
         {
-            var ingredientHistory = await _context.Inventory.Where(i => i.IngredientId == id)
-                .OrderByDescending(i => i.Id)
-                .Select(i =>
-                new IngredientHistory(i.Quantity, i.Price, i.AddedOn)).ToListAsync();
+            var ingredientHistory = await _context.Inventory.Where(inventoryObj => inventoryObj.IngredientId == id)
+                .OrderByDescending(inventoryObj => inventoryObj.Id)
+                .Select(inventoryObj =>
+                new IngredientHistory(inventoryObj.Quantity, inventoryObj.Price, inventoryObj.AddedOn)).ToListAsync();
 
             if (!ingredientHistory.Any())
             {

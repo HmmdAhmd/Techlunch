@@ -25,7 +25,7 @@ namespace TechlunchApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<GeneralInventory>>> GetGeneralInventory()
         {
-            return await _context.GeneralInventory.Include(i => i.IngredientFK).ToListAsync();
+            return await _context.GeneralInventory.Include(generalInventoryObj => generalInventoryObj.IngredientFK).ToListAsync();
         }
 
         // GET: api/GeneralInventories/5
@@ -33,7 +33,7 @@ namespace TechlunchApi.Controllers
         public async Task<ActionResult<GeneralInventory>> GetGeneralInventory(int id)
         {
             var generalInventory = await _context.GeneralInventory.Include(i => i.IngredientFK)
-                .FirstOrDefaultAsync(i => i.Id == id);
+                .FirstOrDefaultAsync(generalInventoryObj => generalInventoryObj.Id == id);
 
             if (generalInventory == null)
             {
@@ -47,7 +47,7 @@ namespace TechlunchApi.Controllers
         [HttpGet("IngredientId/{id}")]
         public async Task<ActionResult<GeneralInventory>> GetGeneralInventoryObj(int id)
         {
-            var generalInventory = await _context.GeneralInventory.SingleOrDefaultAsync(g => g.IngredientId == id);
+            var generalInventory = await _context.GeneralInventory.SingleOrDefaultAsync(generalInventoryObj => generalInventoryObj.IngredientId == id);
 
             if (generalInventory == null)
             {
@@ -62,7 +62,7 @@ namespace TechlunchApi.Controllers
         public async Task<ActionResult<IngredientHistory>> GetIngredientHistory(int id)
         {
             var ingredientHistory = await _context.GeneralInventory.
-                SingleOrDefaultAsync(i => i.IngredientId == id);
+                SingleOrDefaultAsync(generalInventoryObj => generalInventoryObj.IngredientId == id);
 
             if (ingredientHistory == null)
             {
@@ -79,7 +79,7 @@ namespace TechlunchApi.Controllers
 
         private bool GeneralInventoryExists(int id)
         {
-            return _context.GeneralInventory.Any(e => e.Id == id);
+            return _context.GeneralInventory.Any(generalInventoryObj => generalInventoryObj.Id == id);
         }
 
         // PUT: api/GeneralInventories/5
