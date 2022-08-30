@@ -6,7 +6,8 @@ namespace TechlunchApp.Common
 {
     public class ApiAuthorization
     {
-        public static bool IsAuthorized(HttpResponseMessage response) {
+        public static bool IsAuthorized(HttpResponseMessage response)
+        {
             if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
             {
                 return false;

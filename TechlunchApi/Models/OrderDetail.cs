@@ -7,7 +7,6 @@ namespace TechlunchApi.Models
     {
         public int Id { get; set; }
 
-
         [Required]
         public int OrderId { get; set; }
 
@@ -21,8 +20,6 @@ namespace TechlunchApi.Models
         [ForeignKey("FoodItemId")]
         public FoodItem FoodItemFK { get; set; }
 
-
-
         [Required]
         public int Quantity { get; set; }
 
@@ -31,7 +28,6 @@ namespace TechlunchApi.Models
 
         [Required]
         public float EstimatedCost { get; set; }
-
 
     }
 }

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TechlunchApi.Data;
 using TechlunchApi.Models;
+
 namespace TechlunchApi.Controllers
 {
     [Route("api/[controller]")]
@@ -20,7 +21,7 @@ namespace TechlunchApi.Controllers
         }
         // GET: api/FoodItemIngredients/5
         //5 will be the Food Item Id
-       
+
         [HttpGet("{id}")]
         public async Task<ActionResult<IEnumerable<FoodItemIngredients>>> GetFoodItemIngredients(int id)
         {
@@ -28,7 +29,7 @@ namespace TechlunchApi.Controllers
         }
         // POST: api/FoodItemIngredients
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        
+
         [HttpPost]
         public async Task<ActionResult<FoodItemIngredients>> PostFoodItemIngredients(FoodItemIngredients foodItemIngredients)
         {
@@ -51,7 +52,7 @@ namespace TechlunchApi.Controllers
             }
         }
         // DELETE: api/FoodItemIngredients/5
-        
+
         [HttpDelete("{id}")]
         public async Task<ActionResult<FoodItemIngredients>> DeleteFoodItemIngredients(int id)
         {

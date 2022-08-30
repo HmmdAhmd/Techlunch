@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-
 namespace TechlunchApi.Models
 {
     public class FoodItem
@@ -21,7 +20,6 @@ namespace TechlunchApi.Models
         public float Price { get; set; }
 
         public Boolean Status { get; set; }
-
 
     }
 }

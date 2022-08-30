@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel;
 
 namespace TechlunchApi.Models
 {
@@ -18,6 +17,5 @@ namespace TechlunchApi.Models
 
         public Boolean Status { get; set; }
 
-        
     }
 }

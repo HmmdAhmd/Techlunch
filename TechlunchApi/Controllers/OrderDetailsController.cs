@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
@@ -82,7 +81,7 @@ namespace TechlunchApi.Controllers
         [HttpGet("Order/{id}")]
         public async Task<ActionResult<IEnumerable<OrderDetail>>> GetOrderDetails(int id)
         {
-            return await _context.OrderDetail.Include(o => o.FoodItemFK) .Where(i => i.OrderId == id)
+            return await _context.OrderDetail.Include(o => o.FoodItemFK).Where(i => i.OrderId == id)
                 .OrderByDescending(i => i.Id).ToListAsync();
         }
 

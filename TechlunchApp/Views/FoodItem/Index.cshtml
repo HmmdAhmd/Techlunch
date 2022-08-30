@@ -28,12 +28,6 @@
 
             <div class="row">
                 <div class="col-12">
-                    @* @if (ViewBag.Message != null && ViewBag.Message == "success")
-                    {
-                    <div class="alert alert-success">Food item added succesfully.</div>
-                    }else if(ViewBag.Message != null && ViewBag.Message == "error"){
-                    <div class="alert alert-success">Food item added succesfully.</div>
-                    }*@
 
                     <div class="card">
                         <div class="card-header align-items-center d-flex">
@@ -66,9 +60,11 @@
                                             @foreach (var r in Model)
                                             {
                                                 <tr>
-                                                    <th>@i @{
+                                                    <th>
+                                                        @i @{
                                                             i++;
-                                                        }</th>
+                                                        }
+                                                    </th>
                                                     <td>@r.Name</td>
                                                     <td>@r.Price PKR</td>
                                                     <td>
@@ -85,7 +81,6 @@
                                 </div>
                             </div>
 
-
                         </div>
                     </div><!-- end card-body -->
                 </div><!-- end card -->
@@ -94,5 +89,3 @@
         </div>
     </div>
 </div>
-
-

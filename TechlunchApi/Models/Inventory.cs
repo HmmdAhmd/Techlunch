@@ -8,13 +8,11 @@ namespace TechlunchApi.Models
     {
         public int Id { get; set; }
 
-
         [Required]
         public int IngredientId { get; set; }
 
         [ForeignKey("IngredientId")]
         public Ingredient IngredientFK { get; set; }
-
 
         [Required]
         [Range(1, int.MaxValue)]
