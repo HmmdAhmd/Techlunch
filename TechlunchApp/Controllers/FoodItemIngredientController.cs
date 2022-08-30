@@ -16,47 +16,19 @@ namespace TechlunchApp.Controllers
         private static List<IngredientViewModel> Ingredients = new List<IngredientViewModel>();
         private static FoodItemViewModel FoodItem = new FoodItemViewModel();
 
-        private readonly IConfiguration _configuration;
+        private readonly IApiHelper _apiHelper;
 
-        public FoodItemIngredientController(IConfiguration configuration)
+        public FoodItemIngredientController(IApiHelper apiHelper)
         {
-            _configuration = configuration;
+            _apiHelper = apiHelper;
         }
 
         public async Task<IActionResult> Create(int id)
         {
+            FoodItemIngredients = await _apiHelper.Get<List<FoodItemIngredientViewModel>>($"fooditemingredients/{id}");
+            Ingredients = await _apiHelper.Get<List<IngredientViewModel>>($"Ingredients");
+            FoodItem = await _apiHelper.Get<FoodItemViewModel>($"FoodItems/{id}");
 
-            using (var httpClient = new HttpClient())
-            {
-                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
-                using (var response = await httpClient.GetAsync($"{_configuration.GetValue<string>("ApiUrl")}fooditemingredients/{id}"))
-                {
-                    string apiResponse = await response.Content.ReadAsStringAsync();
-                    if (!ApiAuthorization.IsAuthorized(response))
-                    {
-                        return Redirect("/logout");
-                    }
-                    FoodItemIngredients = JsonConvert.DeserializeObject<List<FoodItemIngredientViewModel>>(apiResponse);
-                }
-                using (var IngredientsResponse = await httpClient.GetAsync($"{_configuration.GetValue<string>("ApiUrl")}Ingredients"))
-                {
-                    string IngredientApiResponse = await IngredientsResponse.Content.ReadAsStringAsync();
-                    if (!ApiAuthorization.IsAuthorized(IngredientsResponse))
-                    {
-                        return Redirect("/logout");
-                    }
-                    Ingredients = JsonConvert.DeserializeObject<List<IngredientViewModel>>(IngredientApiResponse);
-                }
-                using (var FoodItemResponse = await httpClient.GetAsync($"{_configuration.GetValue<string>("ApiUrl")}FoodItems/{id}"))
-                {
-                    string FooddItemApiResponse = await FoodItemResponse.Content.ReadAsStringAsync();
-                    if (!ApiAuthorization.IsAuthorized(FoodItemResponse))
-                    {
-                        return Redirect("/logout");
-                    }
-                    FoodItem = JsonConvert.DeserializeObject<FoodItemViewModel>(FooddItemApiResponse);
-                }
-            }
             ViewBag.FoodItem = FoodItem;
             ViewBag.Ingredients = Ingredients;
             ViewBag.FoodItemIngredients = FoodItemIngredients;
@@ -67,17 +39,7 @@ namespace TechlunchApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                using (var httpClient = new HttpClient())
-                {
-                    httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
-                    StringContent content = new StringContent(JsonConvert.SerializeObject(FoodItemIngredientObj), Encoding.UTF8, "application/json");
-                    var response = await httpClient.PostAsync($"{_configuration.GetValue<string>("ApiUrl")}FoodItemIngredients", content);
-                    if (!ApiAuthorization.IsAuthorized(response))
-                    {
-                        return Redirect("/logout");
-                    }
-                    string FooddItemApiResponse = await response.Content.ReadAsStringAsync();
-                }
+                await _apiHelper.Post<FoodItemIngredientViewModel>(FoodItemIngredientObj, "FoodItemIngredients");
                 return RedirectToAction("Create");
             }
 
@@ -91,18 +53,7 @@ namespace TechlunchApp.Controllers
         [HttpPost]
         public async Task<IActionResult> Delete(int ItemId, int FoodItemId)
         {
-            using (var httpClient = new HttpClient())
-            {
-                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
-                using (var response = await httpClient.DeleteAsync($"{_configuration.GetValue<string>("ApiUrl")}FoodItemIngredients/{ItemId}"))
-                {
-                    if (!ApiAuthorization.IsAuthorized(response))
-                    {
-                        return Redirect("/logout");
-                    }
-                    string apiResponse = await response.Content.ReadAsStringAsync();
-                }
-            }
+            await _apiHelper.Delete($"FoodItemIngredients/{ItemId}");
             return Redirect($"/FoodItemIngredient/Create/{FoodItemId}");
         }
     }
