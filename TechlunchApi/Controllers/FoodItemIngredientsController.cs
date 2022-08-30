@@ -25,7 +25,7 @@ namespace TechlunchApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<IEnumerable<FoodItemIngredients>>> GetFoodItemIngredients(int id)
         {
-            return await _context.FoodItemIngredients.Include(c => c.IngredientFK).Where(x => x.FoodItemId == id).ToListAsync();
+            return await _context.FoodItemIngredients.Include(foodItemIngredient => foodItemIngredient.IngredientFK).Where(foodItemIngredient => foodItemIngredient.FoodItemId == id).ToListAsync();
         }
         // POST: api/FoodItemIngredients
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
@@ -34,8 +34,8 @@ namespace TechlunchApi.Controllers
         public async Task<ActionResult<FoodItemIngredients>> PostFoodItemIngredients(FoodItemIngredients foodItemIngredients)
         {
             var foodItemIngredient = _context.FoodItemIngredients
-                          .Where(tbl => tbl.IngredientId == foodItemIngredients.IngredientId &&
-                                        tbl.FoodItemId == foodItemIngredients.FoodItemId)
+                          .Where(foodItemIngredient => foodItemIngredient.IngredientId == foodItemIngredients.IngredientId &&
+                                        foodItemIngredient.FoodItemId == foodItemIngredients.FoodItemId)
                           .SingleOrDefault();
             //check if ingredient is already added against food item so update the quanitiy otherwise add new record
             if (foodItemIngredient == null)
@@ -44,12 +44,10 @@ namespace TechlunchApi.Controllers
                 await _context.SaveChangesAsync();
                 return CreatedAtAction("GetFoodItemIngredients", new { id = foodItemIngredients.Id }, foodItemIngredients);
             }
-            else
-            {
-                foodItemIngredient.Quantity = foodItemIngredient.Quantity + foodItemIngredients.Quantity;
-                await _context.SaveChangesAsync();
-                return foodItemIngredient;
-            }
+            foodItemIngredient.Quantity = foodItemIngredient.Quantity + foodItemIngredients.Quantity;
+            await _context.SaveChangesAsync();
+            return foodItemIngredient;
+
         }
         // DELETE: api/FoodItemIngredients/5
 

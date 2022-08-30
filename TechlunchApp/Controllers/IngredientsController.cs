@@ -1,9 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
+using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
-using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using TechlunchApp.Common;
 using TechlunchApp.ViewModels;
@@ -48,6 +44,7 @@ namespace TechlunchApp.Controllers
         public async Task<IActionResult> Edit(int id)
         {
             IngredientViewModel ingredient = await _apiHelper.Get<IngredientViewModel>($"ingredients/{id}");
+
             return View(ingredient);
         }
 

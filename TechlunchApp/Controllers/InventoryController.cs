@@ -1,9 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
 using System.Collections.Generic;
-using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using TechlunchApp.Common;
 using TechlunchApp.ViewModels;
@@ -52,6 +48,7 @@ namespace TechlunchApp.Controllers
         {
             List<IngredientHistoryViewModel> IngredientHistories = await _apiHelper.Get<List<IngredientHistoryViewModel>>($"Inventories/Ingredient/{id}");
             IngredientViewModel ingredientObj = await _apiHelper.Get<IngredientViewModel>($"Ingredients/{id}");
+
             ViewData["name"] = ingredientObj.Name;
             return View(IngredientHistories);
         }

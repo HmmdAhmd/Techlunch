@@ -32,8 +32,8 @@ namespace TechlunchApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Order>>> GetOrders()
         {
-            return await _context.Orders.Where(o => o.Status == true)
-                .OrderByDescending(o => o.Id).ToListAsync();
+            return await _context.Orders.Where(order => order.Status == true)
+                .OrderByDescending(order => order.Id).ToListAsync();
         }
 
         // GET: api/Orders/5
@@ -42,7 +42,7 @@ namespace TechlunchApi.Controllers
         {
             var order = await _context.Orders.FindAsync(id);
 
-            if (order == null || order.Status == false)
+            if (order == null || !order.Status)
             {
                 return NotFound();
             }
@@ -62,7 +62,7 @@ namespace TechlunchApi.Controllers
 
         private bool OrderExists(int id)
         {
-            return _context.Orders.Any(e => e.Id == id);
+            return _context.Orders.Any(order => order.Id == id);
         }
 
         // PUT: api/Orders/5

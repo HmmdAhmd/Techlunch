@@ -26,7 +26,7 @@ namespace TechlunchApi.Controllers
         public async Task<ActionResult<IEnumerable<FoodItem>>> GetFoodItems()
         {
             return await _context.FoodItems
-                .Where(f => f.Status == true).OrderByDescending(f => f.Id).ToListAsync();
+                .Where(foodItem => foodItem.Status == true).OrderByDescending(foodItem => foodItem.Id).ToListAsync();
         }
 
         // GET: api/FoodItems/5

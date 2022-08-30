@@ -26,12 +26,7 @@ namespace TechlunchApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Ingredient>>> GetIngredients()
         {
-            var result = await _context.Ingredients.ToListAsync();
-            var ingredients = from i in result
-                              where i.Status == true
-                              orderby i.Id descending
-                              select i;
-            return ingredients.ToList();
+            return await _context.Ingredients.Where(ingredient => ingredient.Status == true).OrderByDescending(ingredient => ingredient.Id).ToListAsync();
         }
 
         // GET: api/Ingredients/5
@@ -41,7 +36,7 @@ namespace TechlunchApi.Controllers
         {
             var ingredient = await _context.Ingredients.FindAsync(id);
 
-            if (ingredient == null || ingredient.Status == false)
+            if (ingredient == null || !ingredient.Status)
             {
                 return NotFound();
             }
@@ -63,10 +58,10 @@ namespace TechlunchApi.Controllers
         // DELETE: api/Ingredients/5
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Ingredient>> DeleteIngredient(int id)
+        public async Task<ActionResult> DeleteIngredient(int id)
         {
             var ingredient = await _context.Ingredients.FindAsync(id);
-            if (ingredient == null || ingredient.Status == false)
+            if (ingredient == null || !ingredient.Status)
             {
                 return NotFound();
             }
@@ -80,7 +75,7 @@ namespace TechlunchApi.Controllers
 
         private bool IngredientExists(int id)
         {
-            return _context.Ingredients.Any(e => e.Id == id && e.Status);
+            return _context.Ingredients.Any(ingredient => ingredient.Id == id && ingredient.Status);
         }
 
         // PUT: api/Ingredients/5
@@ -93,13 +88,13 @@ namespace TechlunchApi.Controllers
                 return BadRequest();
             }
 
-            var ing = await _context.Ingredients.FindAsync(id);
-            if (ing == null || !ing.Status)
+            var Ingredient = await _context.Ingredients.FindAsync(id);
+            if (Ingredient == null || !Ingredient.Status)
             {
                 return NotFound();
             }
 
-            ing.Name = ingredient.Name;
+            Ingredient.Name = ingredient.Name;
 
             try
             {
@@ -117,7 +112,7 @@ namespace TechlunchApi.Controllers
                 }
             }
 
-            return CreatedAtAction("GetIngredient", new { id = id }, ing);
+            return CreatedAtAction("GetIngredient", new { id = id }, Ingredient);
         }
     }
 }
