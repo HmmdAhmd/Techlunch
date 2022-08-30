@@ -2,7 +2,6 @@
 @{
     ViewData["Title"] = "Order - Add Food Items";
     int i = 0;
-    int price = 0;
 }
 
 <script>
@@ -60,54 +59,54 @@
                         @foreach (FoodItemViewModel foodItem in Model.FoodItems)
                         {
                             <div class="col-xxl-5">
-                            <div class="card product " style="margin-right:20px">
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-sm">
-                                            <h5 class="text-truncate">
-                                                <span class="text-dark">@foodItem.Name</span>
-                                            </h5>
-                                            <form asp-action="AddOrderDetail" method="post">
-
-                                                <input type="hidden" value="@foodItem.Id" id="FoodItemId" name="FoodItemId">
-                                                <input type="hidden" value="@Model.Order.Id" id="OrderId" name="OrderId">
-                                                <input type="hidden" value="@foodItem.Price" id="Price" name="Price">
-
-                                                <div class="input-step">
-                                                    @if (@foodItem.Quantity < 1)
-                                                    {
-                                                        <button disabled type="submit" class="minus">–</button>
-                                                    }
-                                                    else
-                                                    {
-                                                        <button type="submit" class="minus">–</button>
-                                                    }
-
-                                                    <input type="number" class="product-quantity" value="@foodItem.Quantity" min="0" max="@foodItem.AvailableQuantity" id="Quantity" name="Quantity">
-                                                    @*<button type="submit" class="plus">+</button>*@
-                                                    @if (@foodItem.Quantity >= @foodItem.AvailableQuantity)
-                                                    {
-                                                        <button disabled style="cursor:no-drop" type="submit" title="This Item can't be added because its ingredients are missing from inventory." class="plus">+</button>
-                                                    }
-                                                    else
-                                                    {
-                                                        <button type="submit" class="plus">+</button>
-                                                    }
-                                                </div>
-                                            </form>
-                                        </div>
-                                        <div class="col-sm-auto">
-                                            <div class="text-lg-end">
-                                                <p class="text-muted mb-1">Item Price:</p>
-                                                <h5 class="fs-14">
-                                                    $<span id="ticket_price"
-                                                       class="product-price">@foodItem.Price</span>
+                                <div class="card product " style="margin-right:20px">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-sm">
+                                                <h5 class="text-truncate">
+                                                    <span class="text-dark">@foodItem.Name</span>
                                                 </h5>
+                                                <form asp-action="AddOrderDetail" method="post">
+
+                                                    <input type="hidden" value="@foodItem.Id" id="FoodItemId" name="FoodItemId">
+                                                    <input type="hidden" value="@Model.Order.Id" id="OrderId" name="OrderId">
+                                                    <input type="hidden" value="@foodItem.Price" id="Price" name="Price">
+
+                                                    <div class="input-step">
+                                                        @if (@foodItem.Quantity < 1)
+                                                        {
+                                                            <button disabled type="submit" class="minus">–</button>
+                                                        }
+                                                        else
+                                                        {
+                                                            <button type="submit" class="minus">–</button>
+                                                        }
+
+                                                        <input type="number" class="product-quantity" value="@foodItem.Quantity" min="0" max="@foodItem.AvailableQuantity" id="Quantity" name="Quantity">
+                                                        @*<button type="submit" class="plus">+</button>*@
+                                                        @if (@foodItem.Quantity >= @foodItem.AvailableQuantity)
+                                                        {
+                                                            <button disabled style="cursor:no-drop" type="submit" title="This Item can't be added because its ingredients are missing from inventory." class="plus">+</button>
+                                                        }
+                                                        else
+                                                        {
+                                                            <button type="submit" class="plus">+</button>
+                                                        }
+                                                    </div>
+                                                </form>
+                                            </div>
+                                            <div class="col-sm-auto">
+                                                <div class="text-lg-end">
+                                                    <p class="text-muted mb-1">Item Price:</p>
+                                                    <h5 class="fs-14">
+                                                        $<span id="ticket_price"
+                                                           class="product-price">@foodItem.Price</span>
+                                                    </h5>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
                             </div>
                             i++;
                         }

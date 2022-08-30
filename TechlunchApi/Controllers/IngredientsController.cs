@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TechlunchApi.Data;
@@ -24,7 +22,7 @@ namespace TechlunchApi.Controllers
         }
 
         // GET: api/Ingredients
-       
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Ingredient>>> GetIngredients()
         {
@@ -37,7 +35,7 @@ namespace TechlunchApi.Controllers
         }
 
         // GET: api/Ingredients/5
-       
+
         [HttpGet("{id}")]
         public async Task<ActionResult<Ingredient>> GetIngredient(int id)
         {
@@ -52,7 +50,7 @@ namespace TechlunchApi.Controllers
         }
 
         // POST: api/Ingredients
-        
+
         [HttpPost]
         public async Task<ActionResult<Ingredient>> PostIngredient(Ingredient ingredient)
         {
@@ -63,7 +61,7 @@ namespace TechlunchApi.Controllers
         }
 
         // DELETE: api/Ingredients/5
-       
+
         [HttpDelete("{id}")]
         public async Task<ActionResult<Ingredient>> DeleteIngredient(int id)
         {
@@ -79,14 +77,14 @@ namespace TechlunchApi.Controllers
             return Ok();
         }
 
-        
+
         private bool IngredientExists(int id)
         {
             return _context.Ingredients.Any(e => e.Id == id && e.Status);
         }
 
         // PUT: api/Ingredients/5
-        
+
         [HttpPut("{id}")]
         public async Task<IActionResult> EditIngredient(int id, Ingredient ingredient)
         {
