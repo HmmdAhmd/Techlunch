@@ -23,7 +23,6 @@
                 </div>
             </div>
             <!-- end page title -->
-
             @if (ViewBag.Message == true)
             {
                 <!-- Alert -->
@@ -58,7 +57,6 @@
                                         </div>
                                     </div>
                                 </div>
-                                @*<p id="TimeError" style="color:red; margin-bottom:0px; display:none;">Starting time should be before ending time</p>*@
                                 <button class="btn btn-primary mt-2" type="submit">Generate Report</button>
                             </form>
                         </div>
@@ -70,15 +68,3 @@
         </div>
     </div>
 </div>
-
-@*<script>
-    function ValidateTime() {
-        var StartingTime = document.getElementById("StartingTime").value;
-        var EndingTime = document.getElementById("EndingTime").value;
-        if (StartingTime > EndingTime) {
-            document.getElementById("TimeError").style.display = "block";
-            return false;
-        }
-        return true;
-    }
-</script>*@

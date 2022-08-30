@@ -4,7 +4,7 @@ namespace TechlunchApp.ViewModels
 {
     public class FoodItemViewModel
     {
-      
+
         public int Id { get; set; }
 
         [Required(ErrorMessage = "Please enter name")]

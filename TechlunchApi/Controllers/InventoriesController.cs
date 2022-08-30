@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TechlunchApi.Data;
@@ -24,7 +22,7 @@ namespace TechlunchApi.Controllers
         }
 
         // GET: api/Inventories
-        
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Inventory>>> GetInventory()
         {
@@ -32,7 +30,7 @@ namespace TechlunchApi.Controllers
         }
 
         // GET: api/Inventories/5
-      
+
         [HttpGet("{id}")]
         public async Task<ActionResult<Inventory>> GetInventory(int id)
         {
@@ -61,11 +59,12 @@ namespace TechlunchApi.Controllers
                     AveragePrice = inventory.Price / inventory.Quantity
                 };
                 _context.GeneralInventory.Add(generalInventoryObj);
-                
-            } else // update existing record
+
+            }
+            else // update existing record
             {
                 generalInventory.AvailableQuantity += inventory.Quantity;
-                generalInventory.AveragePrice = 
+                generalInventory.AveragePrice =
                     (generalInventory.AveragePrice + (inventory.Price / inventory.Quantity)) / 2;
             }
 
@@ -74,7 +73,7 @@ namespace TechlunchApi.Controllers
         }
 
         // GET: api/Inventories/Ingredient/5
-        
+
         [HttpGet("Ingredient/{id}")]
         public async Task<ActionResult<IEnumerable<IngredientHistory>>> GetIngredientHistory(int id)
         {
@@ -97,13 +96,13 @@ namespace TechlunchApi.Controllers
         }
 
         // POST: api/Inventories
-       
+
         [HttpPost]
         public async Task<ActionResult<Inventory>> PostInventory(Inventory inventory)
         {
 
             var ingredientObj = await _context.Ingredients.FindAsync(inventory.IngredientId);
-            
+
             if (ingredientObj == null || !ingredientObj.Status)
             {
                 return NotFound("Error 404: Ingredient item not found");

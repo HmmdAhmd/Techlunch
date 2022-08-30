@@ -99,9 +99,11 @@
                                             @foreach (FoodItemIngredientViewModel FoodItemIngredient in ViewBag.FoodItemIngredients)
                                             {
                                                 <tr>
-                                                    <th scope="row">@i @{
+                                                    <th scope="row">
+                                                        @i @{
                                                             i++;
-                                                        }</th>
+                                                        }
+                                                    </th>
                                                     <td>@FoodItemIngredient.IngredientFK.Name</td>
                                                     <td>@FoodItemIngredient.Quantity</td>
                                                     <td>
