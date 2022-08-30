@@ -12,11 +12,12 @@ namespace TechlunchApp.Controllers
 {
     public class AuthenticationController : Controller
     {
-        private readonly IConfiguration _configuration;
+       
+        private readonly IApiHelper _apiHelper;
 
-        public AuthenticationController(IConfiguration configuration)
+        public AuthenticationController(IApiHelper apiHelper)
         {
-            _configuration = configuration;
+            _apiHelper = apiHelper; 
         }
         public IActionResult Index()
         {
@@ -27,19 +28,15 @@ namespace TechlunchApp.Controllers
         public async Task<IActionResult> Login(LoginViewModel loginObj)
         {
             ResponseViewModel token_detail = new ResponseViewModel();
-            using (var httpClient = new HttpClient())
-            {
-                StringContent content = new StringContent(JsonConvert.SerializeObject(loginObj), Encoding.UTF8, "application/json");
-                var response = await httpClient.PostAsync($"{_configuration.GetValue<string>("ApiUrl")}authenticate/login", content);
-                string apiResponse = await response.Content.ReadAsStringAsync();
-                if (!response.IsSuccessStatusCode)
-                {
-                    TempData["ErrorMessage"] = Constants.LoginErrorMessage;
-                    return RedirectToAction("Index", "Home");
-                }
-                token_detail = JsonConvert.DeserializeObject<ResponseViewModel>(apiResponse);
-            }
 
+            var response = await _apiHelper.Post<LoginViewModel>(loginObj, "authenticate/login");
+            string apiResponse = await response.Content.ReadAsStringAsync();
+            if (!response.IsSuccessStatusCode)
+            {
+                TempData["ErrorMessage"] = Constants.LoginErrorMessage;
+                return RedirectToAction("Index", "Home");
+            }
+            token_detail = JsonConvert.DeserializeObject<ResponseViewModel>(apiResponse);
 
             // Add the cookie to the response cookie collection
             Response.Cookies.Append("token", token_detail.Token);
@@ -59,22 +56,16 @@ namespace TechlunchApp.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel registerObj)
         {
-
-            using (var httpClient = new HttpClient())
+            var response = await _apiHelper.Post<RegisterViewModel>(registerObj, "authenticate/register");
+            if (response.StatusCode == System.Net.HttpStatusCode.Conflict)
             {
-                StringContent content = new StringContent(JsonConvert.SerializeObject(registerObj), Encoding.UTF8, "application/json");
-                var response = await httpClient.PostAsync($"{_configuration.GetValue<string>("ApiUrl")}authenticate/register", content);
-                if (response.StatusCode == System.Net.HttpStatusCode.Conflict)
-                {
-                    TempData["ErrorMessage"] = Constants.UserExistErrorMessage;
-                    return RedirectToAction("Register", "Authentication");
-                }
-                else if (response.StatusCode == System.Net.HttpStatusCode.InternalServerError)
-                {
-                    TempData["ErrorMessage"] = Constants.PasswordErrorMessage;
-                    return RedirectToAction("Register", "Authentication");
-                }
-
+                TempData["ErrorMessage"] = Constants.UserExistErrorMessage;
+                return RedirectToAction("Register", "Authentication");
+            }
+            else if (response.StatusCode == System.Net.HttpStatusCode.InternalServerError)
+            {
+                TempData["ErrorMessage"] = Constants.PasswordErrorMessage;
+                return RedirectToAction("Register", "Authentication");
             }
             TempData["SuccessMessage"] = Constants.SignupSuccessMessage;
             return RedirectToAction("Index", "Home");

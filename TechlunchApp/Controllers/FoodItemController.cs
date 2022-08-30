@@ -13,28 +13,16 @@ namespace TechlunchApp.Controllers
 
     public class FoodItemController : Controller
     {
-        private readonly IConfiguration _configuration;
+       
+        private readonly IApiHelper _apiHelper;
 
-        public FoodItemController(IConfiguration configuration)
+        public FoodItemController(IApiHelper ApiHelper)
         {
-            _configuration = configuration;
+            _apiHelper = ApiHelper;
         }
         public async Task<IActionResult> Index()
         {
-            List<FoodItemViewModel> FoodItems = new List<FoodItemViewModel>();
-            using (var httpClient = new HttpClient())
-            {
-                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
-                using (var response = await httpClient.GetAsync($"{_configuration.GetValue<string>("ApiUrl")}fooditems"))
-                {
-                    string apiResponse = await response.Content.ReadAsStringAsync();
-                    if (!ApiAuthorization.IsAuthorized(response))
-                    {
-                        return Redirect("/logout");
-                    }
-                    FoodItems = JsonConvert.DeserializeObject<List<FoodItemViewModel>>(apiResponse);
-                }
-            }
+            List<FoodItemViewModel> FoodItems  = await _apiHelper.Get<List<FoodItemViewModel>>("fooditems");
             return View(FoodItems);
         }
 
@@ -44,24 +32,12 @@ namespace TechlunchApp.Controllers
             return View();
         }
 
-
         [HttpPost]
         public async Task<IActionResult> Create(FoodItemViewModel FoodItemObj)
         {
             if (ModelState.IsValid)
             {
-
-                using (var httpClient = new HttpClient())
-                {
-                    httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
-                    StringContent content = new StringContent(JsonConvert.SerializeObject(FoodItemObj), Encoding.UTF8, "application/json");
-                    var response = await httpClient.PostAsync($"{_configuration.GetValue<string>("ApiUrl")}fooditems", content);
-                    if (!ApiAuthorization.IsAuthorized(response))
-                    {
-                        return Redirect("/logout");
-                    }
-
-                }
+                await _apiHelper.Post<FoodItemViewModel>(FoodItemObj, "fooditems");
                 return RedirectToAction("Index");
             }
 
@@ -71,18 +47,7 @@ namespace TechlunchApp.Controllers
         [HttpPost]
         public async Task<IActionResult> Delete(int ItemId)
         {
-            using (var httpClient = new HttpClient())
-            {
-                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
-                using (var response = await httpClient.DeleteAsync($"{_configuration.GetValue<string>("ApiUrl")}fooditems/{ItemId}"))
-                {
-                    string apiResponse = await response.Content.ReadAsStringAsync();
-                    if (!ApiAuthorization.IsAuthorized(response))
-                    {
-                        return Redirect("/logout");
-                    }
-                }
-            }
+            await _apiHelper.Delete($"fooditems/{ItemId}");
             return RedirectToAction("Index");
         }
 

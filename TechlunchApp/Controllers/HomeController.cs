@@ -13,11 +13,11 @@ namespace TechlunchApp.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly IConfiguration _configuration;
+        private readonly IApiHelper _apiHelper;
 
-        public HomeController(IConfiguration configuration)
+        public HomeController(IApiHelper ApiHelper)
         {
-            _configuration = configuration;
+            _apiHelper = ApiHelper;
         }
         public IActionResult Index()
         {
@@ -33,22 +33,7 @@ namespace TechlunchApp.Controllers
 
             string reportStartDateTime = DateTime.Now.StartOfWeek(DayOfWeek.Monday).ToString("MM/dd/yyyy hh:mm tt");
             string reportEndDateTime = DateTime.Now.ToString("MM/dd/yyyy hh:mm tt");
-
-            ReportViewModel report = new ReportViewModel();
-            using (var httpClient = new HttpClient())
-            {
-                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
-                using (var response = await httpClient.GetAsync($"{_configuration.GetValue<string>("ApiUrl")}report/getreport?StartingTime={reportStartDateTime}&EndingTime={reportEndDateTime}"))
-                {
-                    string apiResponse = await response.Content.ReadAsStringAsync();
-                    if (!ApiAuthorization.IsAuthorized(response))
-                    {
-                        return Redirect("/logout");
-                    }
-                    report = JsonConvert.DeserializeObject<ReportViewModel>(apiResponse);
-                }
-            }
-
+            ReportViewModel report = await _apiHelper.Get<ReportViewModel>($"report/getreport?StartingTime={reportStartDateTime}&EndingTime={reportEndDateTime}");
             return View("dashboard", report);
 
         }
@@ -63,8 +48,6 @@ namespace TechlunchApp.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
-
-
     }
 
     public static class DateTimeExtensions

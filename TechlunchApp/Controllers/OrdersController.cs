@@ -15,100 +15,33 @@ namespace TechlunchApp.Controllers
     public class OrdersController : Controller
     {
 
-        private readonly IConfiguration _configuration;
 
-        public OrdersController(IConfiguration configuration)
+        private readonly IApiHelper _apiHelper;
+
+        public OrdersController(IApiHelper apiHelper)
         {
-            _configuration = configuration;
+            _apiHelper = apiHelper;
         }
         public async Task<IActionResult> Index()
         {
-            List<OrderViewModel> orders = new List<OrderViewModel>();
-            using (var httpClient = new HttpClient())
-            {
-                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
-                using (var response = await httpClient.GetAsync($"{_configuration.GetValue<string>("ApiUrl")}orders"))
-                {
-                    string apiResponse = await response.Content.ReadAsStringAsync();
-                    if (!ApiAuthorization.IsAuthorized(response))
-                    {
-                        return Redirect("/logout");
-                    }
-                    orders = JsonConvert.DeserializeObject<List<OrderViewModel>>(apiResponse);
-                }
-            }
+            List<OrderViewModel> orders = await _apiHelper.Get<List<OrderViewModel>>("orders");
             return View(orders);
         }
 
         [HttpPost]
         public async Task<IActionResult> Confirm(int id)
         {
-            OrderViewModel orderObj = new OrderViewModel();
-
-            using (var httpClient = new HttpClient())
-            {
-                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
-                using (var Response = await httpClient.GetAsync($"{_configuration.GetValue<string>("ApiUrl")}orders/{id}"))
-                {
-                    string apiResponse = await Response.Content.ReadAsStringAsync();
-                    if (!ApiAuthorization.IsAuthorized(Response))
-                    {
-                        return Redirect("/logout");
-                    }
-                    orderObj = JsonConvert.DeserializeObject<OrderViewModel>(apiResponse);
-
-                    orderObj.Confirmed = true;
-
-                }
-
-                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
-                StringContent content = new StringContent(JsonConvert.SerializeObject(orderObj), Encoding.UTF8, "application/json");
-                var response = await httpClient.PutAsync($"{_configuration.GetValue<string>("ApiUrl")}orders/{id}", content);
-                if (!ApiAuthorization.IsAuthorized(response))
-                {
-                    return Redirect("/logout");
-                }
-
-            }
+            OrderViewModel orderObj = await _apiHelper.Get<OrderViewModel>($"orders/{id}");
+            orderObj.Confirmed = true;
+            await _apiHelper.Put<OrderViewModel>(orderObj, $"orders/{id}");
             return RedirectToAction("Index");
         }
 
         [HttpGet]
         public async Task<IActionResult> Details(int id)
         {
-            List<OrderDetailsViewModel> orderDetailsList = new List<OrderDetailsViewModel>();
-            OrderViewModel orderObj = new OrderViewModel();
-
-            using (var httpClient = new HttpClient())
-            {
-                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
-                using (var response = await httpClient.GetAsync($"{_configuration.GetValue<string>("ApiUrl")}orders/{id}"))
-                {
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        return RedirectToAction("Index");
-                    }
-
-                    string apiResponse = await response.Content.ReadAsStringAsync();
-                    if (!ApiAuthorization.IsAuthorized(response))
-                    {
-                        return Redirect("/logout");
-                    }
-                    orderObj = JsonConvert.DeserializeObject<OrderViewModel>(apiResponse);
-                }
-
-                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
-                using (var response = await httpClient.GetAsync($"{_configuration.GetValue<string>("ApiUrl")}orderdetails/order/{id}"))
-                {
-                    string apiResponse = await response.Content.ReadAsStringAsync();
-                    if (!ApiAuthorization.IsAuthorized(response))
-                    {
-                        return Redirect("/logout");
-                    }
-                    orderDetailsList = JsonConvert.DeserializeObject<List<OrderDetailsViewModel>>(apiResponse);
-                }
-
-            }
+            OrderViewModel orderObj = await _apiHelper.Get<OrderViewModel>($"orders/{id}");
+            List<OrderDetailsViewModel> orderDetailsList = await _apiHelper.Get<List<OrderDetailsViewModel>>($"orderdetails/order/{id}");
 
             dynamic Context = new ExpandoObject();
             Context.Order = orderObj;
@@ -126,153 +59,63 @@ namespace TechlunchApp.Controllers
                 Confirmed = false,
                 CreatedAt = Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-ddTHH:mm"))
             };
-            using (var httpClient = new HttpClient())
-            {
-                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
-                StringContent content = new StringContent(JsonConvert.SerializeObject(orderObj), Encoding.UTF8, "application/json");
-                var response = await httpClient.PostAsync($"{_configuration.GetValue<string>("ApiUrl")}orders", content);
-                if (!ApiAuthorization.IsAuthorized(response))
-                {
-                    return Redirect("/logout");
-                }
 
-                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
-                using (var Response = await httpClient.GetAsync($"{_configuration.GetValue<string>("ApiUrl")}orders/latest"))
-                {
-                    if (!Response.IsSuccessStatusCode)
-                    {
-                        return RedirectToAction("Index");
-                    }
-
-                    string apiResponse = await response.Content.ReadAsStringAsync();
-                    if (!ApiAuthorization.IsAuthorized(Response))
-                    {
-                        return Redirect("/logout");
-                    }
-                    orderObj = JsonConvert.DeserializeObject<OrderViewModel>(apiResponse);
-                }
-            }
-
+            await _apiHelper.Post<OrderViewModel>(orderObj, "orders");
+            orderObj = await _apiHelper.Get<OrderViewModel>($"orders/latest");
             return RedirectToAction("AddItems", "Orders", new { id = orderObj.Id });
         }
 
         [HttpGet]
         public async Task<IActionResult> AddItems(int id)
         {
-            OrderViewModel orderObj = new OrderViewModel();
-
-            using (var httpClient = new HttpClient())
+            OrderViewModel orderObj = await _apiHelper.Get<OrderViewModel>($"orders/{id}");
+            if (orderObj.Confirmed)
             {
-                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
-                using (var response = await httpClient.GetAsync($"{_configuration.GetValue<string>("ApiUrl")}orders/{id}"))
-                {
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        return RedirectToAction("Index");
-                    }
-
-                    string apiResponse = await response.Content.ReadAsStringAsync();
-                    if (!ApiAuthorization.IsAuthorized(response))
-                    {
-                        return Redirect("/logout");
-                    }
-                    orderObj = JsonConvert.DeserializeObject<OrderViewModel>(apiResponse);
-
-                    if (orderObj.Confirmed)
-                    {
-                        return RedirectToAction("Index");
-                    }
-                }
+                return RedirectToAction("Index");
             }
 
-            List<FoodItemViewModel> foodItems = new List<FoodItemViewModel>();
-            List<OrderDetailsViewModel> orderDetailsList = new List<OrderDetailsViewModel>();
+            List<FoodItemViewModel> foodItems = await _apiHelper.Get<List<FoodItemViewModel>>("fooditems");
+            List<OrderDetailsViewModel> orderDetailsList = await _apiHelper.Get<List<OrderDetailsViewModel>>($"orderdetails/order/{id}");
 
-            using (var httpClient = new HttpClient())
+            for (int foodItemIndex = 0; foodItemIndex < foodItems.Count;)
             {
-                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
-                using (var response = await httpClient.GetAsync($"{_configuration.GetValue<string>("ApiUrl")}fooditems"))
+                List<FoodItemIngredientViewModel> temp = await _apiHelper.Get<List<FoodItemIngredientViewModel>>($"fooditemingredients/{foodItems[foodItemIndex].Id}");
+                
+                if (temp.Count == 0)
                 {
-                    string apiResponse = await response.Content.ReadAsStringAsync();
-                    if (!ApiAuthorization.IsAuthorized(response))
-                    {
-                        return Redirect("/logout");
-                    }
-                    foodItems = JsonConvert.DeserializeObject<List<FoodItemViewModel>>(apiResponse);
+                    foodItems.Remove(foodItems[foodItemIndex]);
                 }
-
-                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
-                using (var response = await httpClient.GetAsync($"{_configuration.GetValue<string>("ApiUrl")}orderdetails/order/{id}"))
+                else
                 {
-                    string apiResponse = await response.Content.ReadAsStringAsync();
-                    if (!ApiAuthorization.IsAuthorized(response))
-                    {
-                        return Redirect("/logout");
-                    }
-                    orderDetailsList = JsonConvert.DeserializeObject<List<OrderDetailsViewModel>>(apiResponse);
-                }
+                    int availableQuantity = int.MaxValue;
 
-                for (int foodItemIndex = 0; foodItemIndex < foodItems.Count;)
-                {
-                    List<FoodItemIngredientViewModel> temp = new List<FoodItemIngredientViewModel>();
-
-                    httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
-                    using (var response = await httpClient.GetAsync($"{_configuration.GetValue<string>("ApiUrl")}fooditemingredients/{foodItems[foodItemIndex].Id}"))
+                    foreach (FoodItemIngredientViewModel foodItemIng in temp)
                     {
-                        string apiResponse = await response.Content.ReadAsStringAsync();
-                        if (!ApiAuthorization.IsAuthorized(response))
+
+                        GeneralInventoryViewModel generalInvObj  = await _apiHelper.Get<GeneralInventoryViewModel>($"generalinventories/ingredientid/{foodItemIng.IngredientId}");
+
+                        int q = (int)(generalInvObj.AvailableQuantity / foodItemIng.Quantity);
+                        if (q < availableQuantity)
                         {
-                            return Redirect("/logout");
+                            availableQuantity = q;
                         }
-                        temp = JsonConvert.DeserializeObject<List<FoodItemIngredientViewModel>>(apiResponse);
                     }
-                    if (temp.Count == 0)
+                    foodItems[foodItemIndex].AvailableQuantity = availableQuantity;
+
+                    bool cont = true;
+                    foreach (OrderDetailsViewModel orderDetail in orderDetailsList)
                     {
-                        foodItems.Remove(foodItems[foodItemIndex]);
-                    }
-                    else
-                    {
-                        int availableQuantity = int.MaxValue;
-
-                        foreach (FoodItemIngredientViewModel foodItemIng in temp)
+                        if (foodItems[foodItemIndex].Id == orderDetail.FoodItemId)
                         {
-
-                            GeneralInventoryViewModel generalInvObj = new GeneralInventoryViewModel();
-
-                            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
-                            using (var response = await httpClient.GetAsync($"{_configuration.GetValue<string>("ApiUrl")}generalinventories/ingredientid/{foodItemIng.IngredientId}"))
-                            {
-                                string apiResponse = await response.Content.ReadAsStringAsync();
-                                if (!ApiAuthorization.IsAuthorized(response))
-                                {
-                                    return Redirect("/logout");
-                                }
-                                generalInvObj = JsonConvert.DeserializeObject<GeneralInventoryViewModel>(apiResponse);
-                            }
-
-                            int q = (int)(generalInvObj.AvailableQuantity / foodItemIng.Quantity);
-                            if (q < availableQuantity)
-                            {
-                                availableQuantity = q;
-                            }
+                            foodItems[foodItemIndex].Quantity = orderDetail.Quantity;
+                            cont = false;
                         }
-                        foodItems[foodItemIndex].AvailableQuantity = availableQuantity;
-
-                        bool cont = true;
-                        foreach (OrderDetailsViewModel orderDetail in orderDetailsList)
+                        if (!cont)
                         {
-                            if (foodItems[foodItemIndex].Id == orderDetail.FoodItemId)
-                            {
-                                foodItems[foodItemIndex].Quantity = orderDetail.Quantity;
-                                cont = false;
-                            }
-                            if (!cont)
-                            {
-                                break;
-                            }
+                            break;
                         }
-                        foodItemIndex++;
                     }
+                    foodItemIndex++;
                 }
             }
 
@@ -286,33 +129,14 @@ namespace TechlunchApp.Controllers
         private async Task UpdateQuantityInGeneralInv(OrderDetailsViewModel orderDetailObj, bool add = false, bool check = true)
         {
             HttpClient httpClient = new HttpClient();
-            List<FoodItemIngredientViewModel> temp = new List<FoodItemIngredientViewModel>();
 
-            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
-            using (var response = await httpClient.GetAsync($"{_configuration.GetValue<string>("ApiUrl")}fooditemingredients/{orderDetailObj.FoodItemId}"))
-            {
-                string apiResponse = await response.Content.ReadAsStringAsync();
-                if (!ApiAuthorization.IsAuthorized(response))
-                {
-                    RedirectToAction("Logout", "Authentication");
-                }
-                temp = JsonConvert.DeserializeObject<List<FoodItemIngredientViewModel>>(apiResponse);
-            }
+            List<FoodItemIngredientViewModel> temp = await _apiHelper.Get<List<FoodItemIngredientViewModel>>($"fooditemingredients/{orderDetailObj.FoodItemId}");
+
+            
 
             if (check)
             {
-                OrderDetailsViewModel orderDetailBeforeChanges = new OrderDetailsViewModel();
-
-                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
-                using (var response = await httpClient.GetAsync($"{_configuration.GetValue<string>("ApiUrl")}orderdetails/{orderDetailObj.Id}"))
-                {
-                    string apiResponse = await response.Content.ReadAsStringAsync();
-                    if (!ApiAuthorization.IsAuthorized(response))
-                    {
-                        RedirectToAction("Logout", "Authentication");
-                    }
-                    orderDetailBeforeChanges = JsonConvert.DeserializeObject<OrderDetailsViewModel>(apiResponse);
-                }
+                OrderDetailsViewModel orderDetailBeforeChanges = await _apiHelper.Get<OrderDetailsViewModel>($"orderdetails/{orderDetailObj.Id}");
                 if (orderDetailBeforeChanges.Quantity > orderDetailObj.Quantity)
                 {
                     add = true;
@@ -324,18 +148,9 @@ namespace TechlunchApp.Controllers
             }
             foreach (FoodItemIngredientViewModel foodItemIng in temp)
             {
-                GeneralInventoryViewModel generalInvObj = new GeneralInventoryViewModel();
-
+                GeneralInventoryViewModel generalInvObj = await _apiHelper.Get<GeneralInventoryViewModel>($"generalinventories/ingredientid/{foodItemIng.IngredientId}");
                 httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
-                using (var response = await httpClient.GetAsync($"{_configuration.GetValue<string>("ApiUrl")}generalinventories/ingredientid/{foodItemIng.IngredientId}"))
-                {
-                    string apiResponse = await response.Content.ReadAsStringAsync();
-                    if (!ApiAuthorization.IsAuthorized(response))
-                    {
-                        RedirectToAction("Logout", "Authentication");
-                    }
-                    generalInvObj = JsonConvert.DeserializeObject<GeneralInventoryViewModel>(apiResponse);
-                }
+               
                 if (!add)
                 {
                     generalInvObj.AvailableQuantity = (int)(generalInvObj.AvailableQuantity - foodItemIng.Quantity);
@@ -345,13 +160,8 @@ namespace TechlunchApp.Controllers
                     generalInvObj.AvailableQuantity = (int)(generalInvObj.AvailableQuantity + foodItemIng.Quantity);
                 }
 
-                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
-                StringContent content = new StringContent(JsonConvert.SerializeObject(generalInvObj), Encoding.UTF8, "application/json"); ;
-                var Response = await httpClient.PutAsync($"{_configuration.GetValue<string>("ApiUrl")}generalinventories/{generalInvObj.Id}", content);
-                if (!ApiAuthorization.IsAuthorized(Response))
-                {
-                    RedirectToAction("Logout", "Authentication");
-                }
+                await _apiHelper.Put<GeneralInventoryViewModel>(generalInvObj, $"generalinventories/{generalInvObj.Id}");
+
             }
         }
 
@@ -360,34 +170,11 @@ namespace TechlunchApp.Controllers
             float estPrice = 0;
             HttpClient httpClient = new HttpClient();
 
-            List<FoodItemIngredientViewModel> ingredients = new List<FoodItemIngredientViewModel>();
-
-            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
-            using (var response = await httpClient.GetAsync($"{_configuration.GetValue<string>("ApiUrl")}fooditemingredients/{orderDetail.FoodItemId}"))
-            {
-                string apiResponse = await response.Content.ReadAsStringAsync();
-                if (!ApiAuthorization.IsAuthorized(response))
-                {
-                    RedirectToAction("Logout", "Authentication");
-                }
-                ingredients = JsonConvert.DeserializeObject<List<FoodItemIngredientViewModel>>(apiResponse);
-            }
+            List<FoodItemIngredientViewModel> ingredients = await _apiHelper.Get<List<FoodItemIngredientViewModel>>($"fooditemingredients/{orderDetail.FoodItemId}");
 
             for (int i = 0; i < ingredients.Count; i++)
             {
-                GeneralInventoryViewModel generalInventoryObj = new GeneralInventoryViewModel();
-
-                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
-                using (var response = await httpClient.GetAsync($"{_configuration.GetValue<string>("ApiUrl")}generalinventories/ingredient/{ingredients[i].IngredientId}"))
-                {
-                    string apiResponse = await response.Content.ReadAsStringAsync();
-                    if (!ApiAuthorization.IsAuthorized(response))
-                    {
-                        RedirectToAction("Logout", "Authentication");
-                    }
-                    generalInventoryObj = JsonConvert.DeserializeObject<GeneralInventoryViewModel>(apiResponse);
-                }
-
+                GeneralInventoryViewModel generalInventoryObj = await _apiHelper.Get<GeneralInventoryViewModel>($"generalinventories/ingredient/{ingredients[i].IngredientId}");
                 int Quantity = (int)(orderDetail.Quantity * ingredients[i].Quantity);
                 estPrice += generalInventoryObj.AveragePrice * Quantity;
             }
@@ -399,33 +186,14 @@ namespace TechlunchApp.Controllers
         public async Task<IActionResult> AddOrderDetail(OrderDetailsViewModel orderDetail)
         {
             orderDetail.Price = orderDetail.Price * orderDetail.Quantity;
-
             orderDetail.EstimatedCost = await CalcEstimatedCost(orderDetail);
 
-            List<OrderDetailsViewModel> orderDetailsList = new List<OrderDetailsViewModel>();
             HttpClient httpClient = new HttpClient();
-
-            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
-            using (var response = await httpClient.GetAsync($"{_configuration.GetValue<string>("ApiUrl")}orderdetails/order/{orderDetail.OrderId}"))
-            {
-                string apiResponse = await response.Content.ReadAsStringAsync();
-                if (!ApiAuthorization.IsAuthorized(response))
-                {
-                    return Redirect("/logout");
-                }
-                orderDetailsList = JsonConvert.DeserializeObject<List<OrderDetailsViewModel>>(apiResponse);
-            }
+            List<OrderDetailsViewModel> orderDetailsList = await _apiHelper.Get<List<OrderDetailsViewModel>>($"orderdetails/order/{orderDetail.OrderId}");
 
             if (orderDetailsList.Count == 0)
             {
-                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
-                StringContent content = new StringContent(JsonConvert.SerializeObject(orderDetail), Encoding.UTF8, "application/json"); ;
-                var response = await httpClient.PostAsync($"{_configuration.GetValue<string>("ApiUrl")}orderdetails", content);
-                if (!ApiAuthorization.IsAuthorized(response))
-                {
-                    return Redirect("/logout");
-                }
-
+                await _apiHelper.Post<OrderDetailsViewModel>(orderDetail, "orderdetails");
                 await UpdateQuantityInGeneralInv(orderDetail, false, false);
             }
             else
@@ -443,26 +211,12 @@ namespace TechlunchApp.Controllers
                         if (orderDetail.Quantity == 0)
                         {
                             await UpdateQuantityInGeneralInv(orderDetailObj, false);
-
-                            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
-                            var response = await httpClient.DeleteAsync($"{_configuration.GetValue<string>("ApiUrl")}orderdetails/{orderDetailObj.Id}");
-                            if (!ApiAuthorization.IsAuthorized(response))
-                            {
-                                return Redirect("/logout");
-                            }
-
+                            await _apiHelper.Delete($"orderdetails/{orderDetailObj.Id}");
                         }
                         else
                         {
                             await UpdateQuantityInGeneralInv(orderDetailObj);
-
-                            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
-                            StringContent content = new StringContent(JsonConvert.SerializeObject(orderDetailObj), Encoding.UTF8, "application/json"); ;
-                            var response = await httpClient.PutAsync($"{_configuration.GetValue<string>("ApiUrl")}orderdetails/{orderDetailObj.Id}", content);
-                            if (!ApiAuthorization.IsAuthorized(response))
-                            {
-                                return Redirect("/logout");
-                            }
+                            await _apiHelper.Put<OrderDetailsViewModel>(orderDetailObj, $"orderdetails/{orderDetailObj.Id}");
                         }
 
                         cont = false;
@@ -477,29 +231,13 @@ namespace TechlunchApp.Controllers
                 {
 
                     await UpdateQuantityInGeneralInv(orderDetail, false, false);
-
-                    httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
-                    StringContent content = new StringContent(JsonConvert.SerializeObject(orderDetail), Encoding.UTF8, "application/json"); ;
-                    var response = await httpClient.PostAsync($"{_configuration.GetValue<string>("ApiUrl")}orderdetails", content);
-                    if (!ApiAuthorization.IsAuthorized(response))
-                    {
-                        return Redirect("/logout");
-                    }
+                    await _apiHelper.Post<OrderDetailsViewModel>(orderDetail, "orderdetails");
                 }
 
             }
 
-            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
-            using (var response = await httpClient.GetAsync($"{_configuration.GetValue<string>("ApiUrl")}orderdetails/order/{orderDetail.OrderId}"))
-            {
-                string apiResponse = await response.Content.ReadAsStringAsync();
-                if (!ApiAuthorization.IsAuthorized(response))
-                {
-                    return Redirect("/logout");
-                }
 
-                orderDetailsList = JsonConvert.DeserializeObject<List<OrderDetailsViewModel>>(apiResponse);
-            }
+            orderDetailsList = await _apiHelper.Get<List<OrderDetailsViewModel>>($"orderdetails/order/{orderDetail.OrderId}");
 
             float TotalPrice = 0;
             foreach (OrderDetailsViewModel orderDetailObj in orderDetailsList)
@@ -509,47 +247,17 @@ namespace TechlunchApp.Controllers
 
             OrderViewModel orderObj = new OrderViewModel();
 
-            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
-            using (var response = await httpClient.GetAsync($"{_configuration.GetValue<string>("ApiUrl")}orders/{orderDetail.OrderId}"))
-            {
-                string apiResponse = await response.Content.ReadAsStringAsync();
-                if (!ApiAuthorization.IsAuthorized(response))
-                {
-                    return Redirect("/logout");
-                }
-                orderObj = JsonConvert.DeserializeObject<OrderViewModel>(apiResponse);
-            }
+            orderObj = await _apiHelper.Get<OrderViewModel>($"orders/{orderDetail.OrderId}");
             orderObj.TotalPrice = TotalPrice;
 
-            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
-            StringContent Content = new StringContent(JsonConvert.SerializeObject(orderObj), Encoding.UTF8, "application/json"); ;
-            var Response = await httpClient.PutAsync($"{_configuration.GetValue<string>("ApiUrl")}orders/{orderDetail.OrderId}", Content);
-            if (!ApiAuthorization.IsAuthorized(Response))
-            {
-                return Redirect("/logout");
-            }
 
+            await _apiHelper.Put<OrderViewModel>(orderObj, $"orders/{orderDetail.OrderId}");
             return RedirectToAction("AddItems", new { id = orderDetail.OrderId });
         }
 
         public async Task<IActionResult> Delete(int id)
         {
-            OrderViewModel orderObj = new OrderViewModel();
-
-            using (var httpClient = new HttpClient())
-            {
-                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
-                using (var Response = await httpClient.GetAsync($"{_configuration.GetValue<string>("ApiUrl")}orders/{id}"))
-                {
-                    string apiResponse = await Response.Content.ReadAsStringAsync();
-                    if (!ApiAuthorization.IsAuthorized(Response))
-                    {
-                        return Redirect("/logout");
-                    }
-                    orderObj = JsonConvert.DeserializeObject<OrderViewModel>(apiResponse);
-                }
-            }
-
+            OrderViewModel orderObj = await _apiHelper.Get<OrderViewModel>($"orders/{id}");
             return View(orderObj);
         }
     }

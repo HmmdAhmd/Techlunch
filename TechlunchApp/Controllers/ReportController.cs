@@ -14,11 +14,11 @@ namespace TechlunchApp.Controllers
     {
 
         private static bool message = false;
-        private readonly IConfiguration _configuration;
+        private readonly IApiHelper _apiHelper;
 
-        public ReportController(IConfiguration configuration)
+        public ReportController(IApiHelper ApiHelper)
         {
-            _configuration = configuration;
+            _apiHelper = ApiHelper;
         }
 
         public IActionResult Index()
@@ -46,20 +46,9 @@ namespace TechlunchApp.Controllers
 
                 string St = st.ToString("MM/dd/yyyy hh:mm tt");
                 string Et = et.ToString("MM/dd/yyyy") + " 11:59:59 pm";
-                ReportViewModel report = new ReportViewModel();
-                using (var httpClient = new HttpClient())
-                {
-                    httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Request.Cookies["token"]);
-                    using (var response = await httpClient.GetAsync($"{_configuration.GetValue<string>("ApiUrl")}report/getreport?StartingTime={St}&EndingTime={Et}"))
-                    {
-                        string apiResponse = await response.Content.ReadAsStringAsync();
-                        if (!ApiAuthorization.IsAuthorized(response))
-                        {
-                            return Redirect("/logout");
-                        }
-                        report = JsonConvert.DeserializeObject<ReportViewModel>(apiResponse);
-                    }
-                }
+
+                ReportViewModel report = await _apiHelper.Get<ReportViewModel>($"report/getreport?StartingTime={St}&EndingTime={Et}");
+
                 ViewData["StartingTime"] = st.ToString(Constants.DateFormat);
                 ViewData["EndingTime"] = et.ToString(Constants.DateFormat);
                 return View("ShowReport", report);
