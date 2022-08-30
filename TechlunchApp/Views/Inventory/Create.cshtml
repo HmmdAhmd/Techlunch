@@ -1,4 +1,5 @@
-﻿@model InventoryViewModel
+﻿@using TechlunchApp.Common
+@model InventoryViewModel
 @{
     ViewData["Title"] = "Add Inventory Item";
 }
@@ -70,7 +71,7 @@
                                     <div class="col-xxl-3 col-md-6">
                                         <div>
                                             @Html.LabelFor(model => model.AddedOn, "Added", new { htmlAttributes = new { @class = "form-control" } })
-                                            @Html.EditorFor(model => model.AddedOn, new { htmlAttributes = new { @type="datetime-local", @class = "form-control" } })
+                                            <input type="datetime-local" class="form-control" id="AddedOn" name="AddedOn" value="@DateTime.Now.ToString(Constants.DateTimeInputFormat)"/>
                                             @Html.ValidationMessageFor(model => model.AddedOn, "", new { @class = "text-danger" })
                                         </div>
                                     </div>

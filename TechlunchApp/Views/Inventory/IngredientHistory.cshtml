@@ -1,4 +1,5 @@
-﻿@model IEnumerable<IngredientHistoryViewModel>
+﻿@using TechlunchApp.Common
+@model IEnumerable<IngredientHistoryViewModel>
 @{
     ViewData["Title"] = "Ingredient History";
     int i = 1;
@@ -60,7 +61,7 @@
                                                     <th>@i</th>
                                                     <td>@r.Quantity</td>
                                                     <td>@r.Price</td>
-                                                    <td>@r.AddedOn</td>
+                                                    <td>@r.AddedOn.ToString(Constants.DateTimeFormat)</td>
                                                 </tr>
                                                 i++;
                                             }

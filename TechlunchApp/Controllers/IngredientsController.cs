@@ -82,6 +82,10 @@ namespace TechlunchApp.Controllers
                     {
                         return Redirect("/logout");
                     }
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        return RedirectToAction("Index");
+                    }
                     ingredient = JsonConvert.DeserializeObject<IngredientViewModel>(apiResponse);
                 }
             }

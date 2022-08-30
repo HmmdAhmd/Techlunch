@@ -63,7 +63,7 @@ namespace TechlunchApi.Controllers
         // DELETE: api/Ingredients/5
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Ingredient>> DeleteIngredient(int id)
+        public async Task<ActionResult> DeleteIngredient(int id)
         {
             var ingredient = await _context.Ingredients.FindAsync(id);
             if (ingredient == null || ingredient.Status == false)

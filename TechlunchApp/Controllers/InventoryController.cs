@@ -101,6 +101,10 @@ namespace TechlunchApp.Controllers
                     {
                         return Redirect("/logout");
                     }
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        return RedirectToAction("Index", "Inventory");
+                    }
                     IngredientHistories = JsonConvert.DeserializeObject<List<IngredientHistoryViewModel>>(content);
                 }
 
